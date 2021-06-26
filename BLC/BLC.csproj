@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EnyimMemcachedCore" Version="2.5.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DALC\DALC.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CoreCrypto">
+      <HintPath>..\DLL\CoreCrypto.dll</HintPath>
+    </Reference>
+    <Reference Include="CoreHasher">
+      <HintPath>..\DLL\CoreHasher.dll</HintPath>
+    </Reference>
+    <Reference Include="CoreTools">
+      <HintPath>..\DLL\CoreTools.dll</HintPath>
+    </Reference>
+    <Reference Include="TwinCAT.Ads">
+      <HintPath>..\DLL\TwinCAT.Ads.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

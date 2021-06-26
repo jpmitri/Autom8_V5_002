@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<MESSAGES>
+  <ENGLISH>
+    <MESSAGE CODE="BR_9999" CONTENT="Invalid Credentials" />
+    <MESSAGE CODE="BR_0000" CONTENT="%1 Must Be Unique" />
+    <MESSAGE CODE="BR_0001" CONTENT="Password Should Be At Least 4 Characters" />
+    <MESSAGE CODE="BR_0002" CONTENT="Unable To Change PLC State" />
+    <MESSAGE CODE="BR_0003" CONTENT="Unable To Find The Specefied Outlet For The Specefied User" />
+    <MESSAGE CODE="BR_0004" CONTENT="Unable To Connect To PLC" />
+
+  </ENGLISH>
+</MESSAGES>
+
