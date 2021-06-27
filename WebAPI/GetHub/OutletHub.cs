@@ -7,13 +7,9 @@ using BLC;
 
 using Microsoft.AspNetCore.SignalR;
 
-namespace WebAPI.Hubs
+namespace WebAPI.GetHub
 {
     public class OutletHub : Hub
     {
-        public async void SubscribeToOutlet(Outlet[] ChangedOutlets)
-        {
-            await Clients.All.SendCoreAsync("FetchData", ChangedOutlets);
-        }
     }
 }

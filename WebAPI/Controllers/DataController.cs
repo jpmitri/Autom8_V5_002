@@ -797,66 +797,6 @@ return oResult_Edit_Hardware_link;
 #endregion
 }
 #endregion
-#region Edit_Outlet
-[HttpPost]
-[Route("Edit_Outlet")]
-public Result_Edit_Outlet Edit_Outlet(Outlet i_Outlet)
-{
-#region Declaration And Initialization Section.
-string i_Ticket = string.Empty;
-Result_Edit_Outlet oResult_Edit_Outlet = new Result_Edit_Outlet();
-#endregion
-#region Body Section.
-try
-{
-
-// Ticket Checking
-//-------------------
-if (ConfigurationManager.AppSettings["ENABLE_TICKET"] != null)
-{
-if (ConfigurationManager.AppSettings["ENABLE_TICKET"] == "1")
-{
-if
-(
-(HttpContext.Request.Query["Ticket"].FirstOrDefault() != null) &&
-(HttpContext.Request.Query["Ticket"].ToString() != "")
-)
-{
-i_Ticket = HttpContext.Request.Query["Ticket"].ToString();
-}
-else
-{
-throw new Exception("Invalid Ticket");
-}
-}
-}
-//-------------------
-
-BLC.BLC oBLC_Default = new BLC.BLC();
-BLCInitializer oBLCInitializer = oBLC_Default.Prepare_BLCInitializer(i_Ticket,BLC.BLC.Enum_API_Method.Edit_Outlet);
-using (BLC.BLC oBLC = new BLC.BLC(oBLCInitializer))
-{
-oBLC.Edit_Outlet(i_Outlet);
-oResult_Edit_Outlet.My_Outlet = i_Outlet;
-}
-}
-catch(Exception ex)
-{
-if (ex.GetType().FullName != "BLC.BLCException")
-{
-oResult_Edit_Outlet.ExceptionMsg = string.Format("Edit_Outlet : {0}", ex.Message);
-}
-else
-{
-oResult_Edit_Outlet.ExceptionMsg = ex.Message;
-}
-}
-#endregion
-#region Return Section
-return oResult_Edit_Outlet;
-#endregion
-}
-#endregion
 #region Edit_Outlet_type
 [HttpPost]
 [Route("Edit_Outlet_type")]
