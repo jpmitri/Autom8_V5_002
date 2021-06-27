@@ -474,6 +474,12 @@ public List<Hardware_link> Get_Hardware_link_By_OWNER_ID(Params_Get_Hardware_lin
 List<Hardware_link> oList = new List<Hardware_link>();
 Hardware_link oHardware_link = new Hardware_link();
 if (OnPreEvent_General != null){OnPreEvent_General("Get_Hardware_link_By_OWNER_ID");}
+#region PreEvent_Get_Hardware_link_By_OWNER_ID
+if (OnPreEvent_Get_Hardware_link_By_OWNER_ID != null)
+{
+OnPreEvent_Get_Hardware_link_By_OWNER_ID(i_Params_Get_Hardware_link_By_OWNER_ID);
+}
+#endregion
 #region Body Section.
 List<DALC.Hardware_link> oList_DBEntries = _AppContext.Get_Hardware_link_By_OWNER_ID(i_Params_Get_Hardware_link_By_OWNER_ID.OWNER_ID);
 if (oList_DBEntries != null)
@@ -484,6 +490,12 @@ oHardware_link = new Hardware_link();
 oTools.CopyPropValues(oDBEntry, oHardware_link);
 oList.Add(oHardware_link);
 }
+}
+#endregion
+#region PostEvent_Get_Hardware_link_By_OWNER_ID
+if (OnPostEvent_Get_Hardware_link_By_OWNER_ID != null)
+{
+OnPostEvent_Get_Hardware_link_By_OWNER_ID(oList,i_Params_Get_Hardware_link_By_OWNER_ID);
 }
 #endregion
 if (OnPostEvent_General != null){OnPostEvent_General("Get_Hardware_link_By_OWNER_ID");}
@@ -706,6 +718,12 @@ public List<Plc> Get_Plc_By_OWNER_ID(Params_Get_Plc_By_OWNER_ID i_Params_Get_Plc
 List<Plc> oList = new List<Plc>();
 Plc oPlc = new Plc();
 if (OnPreEvent_General != null){OnPreEvent_General("Get_Plc_By_OWNER_ID");}
+#region PreEvent_Get_Plc_By_OWNER_ID
+if (OnPreEvent_Get_Plc_By_OWNER_ID != null)
+{
+OnPreEvent_Get_Plc_By_OWNER_ID(i_Params_Get_Plc_By_OWNER_ID);
+}
+#endregion
 #region Body Section.
 List<DALC.Plc> oList_DBEntries = _AppContext.Get_Plc_By_OWNER_ID(i_Params_Get_Plc_By_OWNER_ID.OWNER_ID);
 if (oList_DBEntries != null)
@@ -716,6 +734,12 @@ oPlc = new Plc();
 oTools.CopyPropValues(oDBEntry, oPlc);
 oList.Add(oPlc);
 }
+}
+#endregion
+#region PostEvent_Get_Plc_By_OWNER_ID
+if (OnPostEvent_Get_Plc_By_OWNER_ID != null)
+{
+OnPostEvent_Get_Plc_By_OWNER_ID(oList,i_Params_Get_Plc_By_OWNER_ID);
 }
 #endregion
 if (OnPostEvent_General != null){OnPostEvent_General("Get_Plc_By_OWNER_ID");}

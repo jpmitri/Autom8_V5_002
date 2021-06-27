@@ -312,6 +312,73 @@ namespace BLC
             #endregion
         }
         #endregion
+        #region Log In Service
+        
+             public Service_Data_Result Get_Service_Data(Params_Get_Service_Data i_Params_Get_Service_Data)
+        {
+            #region Declaration And Initialization Section.
+            Crypto.MiniCryptoHelper oCrypto = new Crypto.MiniCryptoHelper();
+            Crypto.Crypto sCrypto = new Crypto.Crypto();
+            string str_Ticket_PlainText = string.Empty;
+            string str_Ticket_Encrypted = string.Empty;
+            Int32? i_ExpiryPeriod = 240; // In Minutes
+            long? i_MinutesElapsedSinceMidnight = 0;
+            Service_Data_Result result = new();
+            Tools.Tools oTools = new Tools.Tools();
+
+            #endregion
+            #region Body Section.
+            var oQuery = from oItem in _AppContext.UP_GET_ALL_DATA(
+                i_Params_Get_Service_Data.My_UserInfo.UserName,
+                oCrypto.Encrypt(i_Params_Get_Service_Data.My_UserInfo.Password)
+                )
+                         select oItem;
+
+            if (oQuery.Count() == 1)
+            {
+                var oResult = oQuery.First();
+                // ------------------------------
+                i_Params_Get_Service_Data.My_UserInfo.IsAuthenticated = true;
+                i_Params_Get_Service_Data.My_UserInfo.UserID = oResult.USER_ID;
+                i_Params_Get_Service_Data.My_UserInfo.OwnerID = oResult.OWNER_ID;
+                // ------------------------------
+
+
+                // ------------------------------
+                this.UserID = i_Params_Get_Service_Data.My_UserInfo.UserID;
+                this.OwnerID = i_Params_Get_Service_Data.My_UserInfo.OwnerID;
+                // ------------------------------
+
+                // ------------------------------
+                i_MinutesElapsedSinceMidnight = (long?)(DateTime.Now - DateTime.Today).TotalMinutes;
+                str_Ticket_PlainText = string.Format(
+                    "USER_ID:{0}[~!@]OWNER_ID:{1}[~!@]START_DATE:{2}[~!@]START_MINUTE:{3}[~!@]SESSION_PERIOD:{4}",
+                    i_Params_Get_Service_Data.My_UserInfo.UserID.ToString(),
+                    i_Params_Get_Service_Data.My_UserInfo.OwnerID.ToString(),
+                    oTools.GetDateString(DateTime.Today),
+                    i_MinutesElapsedSinceMidnight.ToString(),
+                    i_ExpiryPeriod.ToString()
+                    );
+                str_Ticket_Encrypted = sCrypto.ScrambleQueryString(str_Ticket_PlainText);
+                str_Ticket_Encrypted = System.Net.WebUtility.UrlEncode(str_Ticket_Encrypted);
+                result.My_UserInfo = i_Params_Get_Service_Data.My_UserInfo;
+                result.My_UserInfo.Ticket = str_Ticket_Encrypted;
+                // ------------------------------
+                Params_Get_Plc_By_OWNER_ID params_Get_Plc_By_OWNER_ID = new();
+                params_Get_Plc_By_OWNER_ID.OWNER_ID = 1;
+                result.My_PLCs = Get_Plc_By_OWNER_ID(params_Get_Plc_By_OWNER_ID);
+            }
+            else
+            {
+                throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_9999));
+            }
+
+            #endregion
+            #region Return Section.
+            return result;
+            #endregion
+        }
+        #endregion
     }
     #region Business Entities
     #region Setup
@@ -419,6 +486,17 @@ namespace BLC
     public partial class Admin_log_in_res
     {
         public UserInfo MyUser { get; set; }
+    }
+    #endregion
+    #region Log In Service
+    public class Params_Get_Service_Data
+    {
+        public UserInfo My_UserInfo { get; set; }
+    }
+    public partial class Service_Data_Result
+    {
+        public List<Plc> My_PLCs { get; set; }
+        public UserInfo My_UserInfo { get; set; }
     }
     #endregion
     #endregion

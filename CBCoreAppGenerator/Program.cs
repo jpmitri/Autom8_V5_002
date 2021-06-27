@@ -208,7 +208,7 @@ namespace CodeGenerator
             oCodeBooster.APIMethodsSelection.Add("Get_User_By_OWNER_ID");
             #endregion
             #region Edit
-            oCodeBooster.APIMethodsSelection.Add("Edit_Outlet");
+            oCodeBooster.APIMethodsSelection.Add("Edit_Outlet");//  Manualy Added For SignalR
             oCodeBooster.APIMethodsSelection.Add("Edit_Outlet_ui");
             oCodeBooster.APIMethodsSelection.Add("Edit_User");
             #endregion
@@ -247,6 +247,9 @@ namespace CodeGenerator
             oCodeBooster.APIMethodsSelection.Add("Delete_Room");
             oCodeBooster.APIMethodsSelection.Add("Delete_Outlet_ui");
             #endregion
+            #endregion
+            #region Service
+            oCodeBooster.APIMethodsSelection.Add("Get_Service_Data");
             #endregion
             #endregion
             #region Advanced Options
@@ -342,16 +345,26 @@ namespace CodeGenerator
                     //oCodeBooster.List_Reset_Topology.Add(new Reset_Topology() { ParentTable = "[TBL_PERSONS]", ChildTables = new List<string>() { "[TBL_ADDRES]", "[TBL_CONTACT]" } });
                     #region Eager Loading
                     oCodeBooster.List_Eager_Loading = new List<Eager_Loading>();
-                    //oCodeBooster.List_Eager_Loading.Add(
-                    //    new Eager_Loading()
-                    //    {
-                    //        Method_Name = "Get_Ac_By_AC_ID_Adv",
-                    //        ParentTable = "[TBL_AC]",
-                    //        ChildTables = new List<string>()
-                    //        { 
-                    //            "[TBL_AC_AMENITY]"
-                    //        }
-                    //    });
+                    oCodeBooster.List_Eager_Loading.Add(
+                        new Eager_Loading()
+                        {
+                            Method_Name = "Get_Plc_By_OWNER_ID",
+                            ParentTable = "[TBL_PLC]",
+                            ChildTables = new List<string>()
+                            {
+                                "[TBL_HARDWARE_LINK]"
+                            }
+                        });
+                    oCodeBooster.List_Eager_Loading.Add(
+                        new Eager_Loading()
+                        {
+                            Method_Name = "Get_Hardware_link_By_OWNER_ID",
+                            ParentTable = "[TBL_HARDWARE_LINK]",
+                            ChildTables = new List<string>()
+                            {
+                                "[TBL_OUTLET]"
+                            }
+                        });
 
                     #endregion
 

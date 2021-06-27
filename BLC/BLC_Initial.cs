@@ -108,7 +108,7 @@ namespace BLC
         public void SubscribeToEvents()
         {
             #region Declaration And Initialization Section.
-            //Initialize_Eager_Loading_Mechanism();
+            Initialize_Eager_Loading_Mechanism();
             Register_Uploaded_Events_Handlers();
             #endregion
             #region Body Section.
@@ -120,7 +120,6 @@ namespace BLC
             OnPostEvent_Edit_User += BLC_OnPostEvent_Edit_User;
             #endregion
         }
-
         #endregion
         #region IDisposable Members
         public void Dispose()
