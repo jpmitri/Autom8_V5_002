@@ -88,7 +88,7 @@ namespace MonitorPLCService
                 while (toApi.CURRENT_VALUE is null)
                 {
                     toApi.CURRENT_VALUE = Twincat2Read(params_Twincat2Read);
-                    if (toApi is null)
+                    if (toApi.CURRENT_VALUE is null)
                     {
                         await Task.Delay(5000);
                     }
@@ -102,7 +102,7 @@ namespace MonitorPLCService
                 HttpResponseMessage response = await client.PostAsync(request, content);
                 responseString = await response.Content.ReadAsStringAsync();
                 _logger.LogInformation(
-                e.NotificationHandle, toWrite.PlcAddress);
+                e.NotificationHandle, toWrite.HW_link_name);
 
             }
             catch (Exception ex)
@@ -137,7 +137,7 @@ namespace MonitorPLCService
                     {
                         topLevel = JsonConvert.DeserializeObject<TopLevel>(responseString);
                     }
-                    if(!loggedIn)
+                    if (!loggedIn)
                     {
                         await Task.Delay(5000, stoppingToken);
                     }
@@ -163,7 +163,7 @@ namespace MonitorPLCService
                 {
                     foreach (Outlet_Edit item in _outlets)
                     {
-                        item.PLCMonitor = tcAdsClient.AddDeviceNotification(item.PlcAddress, dataStream, 0, 1, AdsTransMode.OnChange, 100, 0, "");
+                        item.PLCMonitor = tcAdsClient.AddDeviceNotification(item.HW_link_name, dataStream, 0, 1, AdsTransMode.OnChange, 100, 0, "");
                     }
                     tcAdsClient.AdsNotification += new(WriteChange);
                 }
