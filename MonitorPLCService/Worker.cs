@@ -145,7 +145,6 @@ namespace MonitorPLCService
                 _outlets = new();
                 foreach (MyPlc plc in topLevel.MyResult.MyPlCs)
                 {
-                    AmsNetId amsNetId = new(plc.Location);
                     foreach (MyHardwareLink Hardware in plc.MyHardwareLink)
                     {
                         foreach (MyOutlet outlet in Hardware.MyOutlet)
