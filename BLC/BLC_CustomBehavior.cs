@@ -330,7 +330,7 @@ namespace BLC
             #region Body Section.
             var oQuery = from oItem in _AppContext.UP_GET_ALL_DATA(
                 i_Params_Get_Service_Data.My_UserInfo.UserName,
-                oCrypto.Encrypt(i_Params_Get_Service_Data.My_UserInfo.Password)
+                i_Params_Get_Service_Data.My_UserInfo.Password
                 )
                          select oItem;
 

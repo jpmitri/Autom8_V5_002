@@ -235,7 +235,7 @@ namespace CodeGenerator
             oCodeBooster.APIMethodsSelection.Add("Edit_Outlet_type");
             oCodeBooster.APIMethodsSelection.Add("Edit_Floor");
             oCodeBooster.APIMethodsSelection.Add("Edit_Room");
-            
+
             #endregion
             #region Delete
             oCodeBooster.APIMethodsSelection.Add("Delete_Outlet");
@@ -388,14 +388,10 @@ namespace CodeGenerator
                     oCodeBooster.My_Enum_API_Accessibility = Enum_API_Accessibility.Same_Domain;
                     #region Api Bypass Ticketing
                     oCodeBooster.List_ByPass_Ticketing = new List<string>();
-
                     oCodeBooster.List_ByPass_Ticketing.Add("Get_All_Data");
                     oCodeBooster.List_ByPass_Ticketing.Add("Admin_log_in");
+                    oCodeBooster.List_ByPass_Ticketing.Add("Get_Service_Data");
                     #endregion
-
-
-
-
 
                     // --------------                                        
                     oCodeBoosterClient.GenerateAPILayer();

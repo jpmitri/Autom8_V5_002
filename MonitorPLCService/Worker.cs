@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -13,8 +14,10 @@ namespace MonitorPLCService
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private HttpClient client;
         private List<Outlet> outlets;
+        private HttpClient client;
+        private Plc plc;
+        private UserInfo user;
         public Worker(ILogger<Worker> logger)
         {
             _logger = logger;
@@ -22,8 +25,11 @@ namespace MonitorPLCService
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            client = new();
             outlets = new();
+            client = new();
+            user = new();
+            plc = new();
+
             return base.StartAsync(cancellationToken);
         }
 
@@ -36,6 +42,14 @@ namespace MonitorPLCService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            var values = new Dictionary<string, string> {
+                        { "UserName", ConfigurationManager.AppSettings["USERNAME"] },
+                        { "Password", ConfigurationManager.AppSettings["ENCRYPTED_PASSWORD"] }
+                    };
+            FormUrlEncodedContent content = new FormUrlEncodedContent(values);
+            HttpResponseMessage response = await client.PostAsync(ConfigurationManager.AppSettings["API"]+ "Get_Service_Data", content);
+            string responseString = await response.Content.ReadAsStringAsync();
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);

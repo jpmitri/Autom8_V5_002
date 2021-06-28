@@ -1601,27 +1601,6 @@ Result_Get_Service_Data oResult_Get_Service_Data = new Result_Get_Service_Data()
 try
 {
 
-// Ticket Checking
-//-------------------
-if (ConfigurationManager.AppSettings["ENABLE_TICKET"] != null)
-{
-if (ConfigurationManager.AppSettings["ENABLE_TICKET"] == "1")
-{
-if
-(
-(HttpContext.Request.Query["Ticket"].FirstOrDefault() != null) &&
-(HttpContext.Request.Query["Ticket"].ToString() != "")
-)
-{
-i_Ticket = HttpContext.Request.Query["Ticket"].ToString();
-}
-else
-{
-throw new Exception("Invalid Ticket");
-}
-}
-}
-//-------------------
 
 BLC.BLC oBLC_Default = new BLC.BLC();
 BLCInitializer oBLCInitializer = oBLC_Default.Prepare_BLCInitializer(i_Ticket,BLC.BLC.Enum_API_Method.Get_Service_Data);
