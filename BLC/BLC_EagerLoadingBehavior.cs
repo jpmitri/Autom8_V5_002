@@ -64,8 +64,8 @@ OnPostEvent_General("BLC_OnPostEvent_Get_Plc_By_OWNER_ID_Eager_Loading");
 #endregion
 }
 #endregion
-#region BLC_OnPostEvent_Get_Hardware_link_By_OWNER_ID_Eager_Loading
-void BLC_OnPostEvent_Get_Hardware_link_By_OWNER_ID_Eager_Loading(List<Hardware_link> i_Result, Params_Get_Hardware_link_By_OWNER_ID i_Params_Get_Hardware_link_By_OWNER_ID)
+#region BLC_OnPostEvent_Get_Hardware_link_By_OWNER_ID_Adv_Eager_Loading
+void BLC_OnPostEvent_Get_Hardware_link_By_OWNER_ID_Adv_Eager_Loading(List<Hardware_link> i_Result, Params_Get_Hardware_link_By_OWNER_ID i_Params_Get_Hardware_link_By_OWNER_ID)
 {
 #region Declaration And Initialization Section.
 List<Outlet> oList_Outlet = new List<Outlet>();
@@ -74,7 +74,7 @@ Params_Get_Outlet_By_OWNER_ID oParams_Get_Outlet_By_OWNER_ID = new Params_Get_Ou
 #region PreEvent_General
 if (OnPreEvent_General != null)
 {
-OnPreEvent_General("BLC_OnPostEvent_Get_Hardware_link_By_OWNER_ID_Eager_Loading");
+OnPreEvent_General("BLC_OnPostEvent_Get_Hardware_link_By_OWNER_ID_Adv_Eager_Loading");
 }
 #endregion
 #region Body Section
@@ -100,7 +100,7 @@ oRow_Hardware_link.My_Outlet = (from oItem in oList_Outlet where (oItem.HARDWARE
 #region PostEvent_General
 if (OnPostEvent_General != null)
 {
-OnPostEvent_General("BLC_OnPostEvent_Get_Hardware_link_By_OWNER_ID_Eager_Loading");
+OnPostEvent_General("BLC_OnPostEvent_Get_Hardware_link_By_OWNER_ID_Adv_Eager_Loading");
 }
 #endregion
 }
@@ -112,7 +112,7 @@ public void Initialize_Eager_Loading_Mechanism()
 #endregion
 #region Body Section.
 this.OnPostEvent_Get_Plc_By_OWNER_ID +=new PostEvent_Handler_Get_Plc_By_OWNER_ID(BLC_OnPostEvent_Get_Plc_By_OWNER_ID_Eager_Loading);
-this.OnPostEvent_Get_Hardware_link_By_OWNER_ID +=new PostEvent_Handler_Get_Hardware_link_By_OWNER_ID(BLC_OnPostEvent_Get_Hardware_link_By_OWNER_ID_Eager_Loading);
+this.OnPostEvent_Get_Hardware_link_By_OWNER_ID_Adv +=new PostEvent_Handler_Get_Hardware_link_By_OWNER_ID_Adv(BLC_OnPostEvent_Get_Hardware_link_By_OWNER_ID_Adv_Eager_Loading);
 
 #endregion
 }

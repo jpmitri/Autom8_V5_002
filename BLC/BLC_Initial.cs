@@ -239,6 +239,7 @@ namespace BLC
                         Params_Get_Ui_By_UI_ID params_Get_Ui_By_UI_ID = new();
                         params_Get_Ui_By_UI_ID.UI_ID = outlet_Ui.UI_ID;
                         outlet.UI_Element = Get_Ui_By_UI_ID(params_Get_Ui_By_UI_ID);
+                        outlet.My_Outlet_Ui = outlet_Ui;
                     }
                     else
                     {

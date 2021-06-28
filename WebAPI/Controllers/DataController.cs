@@ -750,7 +750,7 @@ return oResult_Edit_Hardware_link;
 }
 #endregion
 #region Edit_Outlet
-// Moved To SignalR
+//Implemented in SignalR
 #endregion
 #region Edit_Outlet_type
 [HttpPost]

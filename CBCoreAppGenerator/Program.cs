@@ -358,7 +358,7 @@ namespace CodeGenerator
                     oCodeBooster.List_Eager_Loading.Add(
                         new Eager_Loading()
                         {
-                            Method_Name = "Get_Hardware_link_By_OWNER_ID",
+                            Method_Name = "Get_Hardware_link_By_OWNER_ID_Adv",
                             ParentTable = "[TBL_HARDWARE_LINK]",
                             ChildTables = new List<string>()
                             {
