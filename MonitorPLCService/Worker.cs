@@ -11,8 +11,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using TwinCAT.Ads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MonitorPLCService
 {
@@ -23,6 +25,10 @@ namespace MonitorPLCService
         private HttpClient client;
         private List<Plc> plc;
         private Params_Get_Service_Data user;
+        private AdsStream dataStream;
+        private List<Outlet_Edit> _outlets;
+        private TopLevel topLevel;
+        private string responseString = string.Empty;
         public Worker(ILogger<Worker> logger)
         {
             _logger = logger;
@@ -35,7 +41,8 @@ namespace MonitorPLCService
             user = new();
             user.My_UserInfo = new();
             plc = new();
-
+            dataStream = new();
+            topLevel = new();
             return base.StartAsync(cancellationToken);
         }
 
@@ -45,35 +52,136 @@ namespace MonitorPLCService
             _logger.LogInformation("The service has been stopped...");
             return base.StopAsync(cancellationToken);
         }
+        public String Twincat2Read(Params_Twincat2Read i_Params_Twincat2Read)
+        {
+            try
+            {
+                using (TcAdsClient tcAdsClient = new())
+                {
+                    AmsNetId amsNetId = new(i_Params_Twincat2Read.AMSID);
+                    tcAdsClient.Connect(amsNetId, int.Parse(i_Params_Twincat2Read.Port));
+                    int varibalehande = tcAdsClient.CreateVariableHandle(i_Params_Twincat2Read.VariableName);
+                    string res = tcAdsClient.ReadAny(varibalehande, varibalehande.GetType()).ToString(); ;
+                    tcAdsClient.Dispose();
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "There was a problem contacting the PLC");
+                return null;
+            }
+        }
+        public async void WriteChange(object sender, AdsNotificationEventArgs e)
+        {
+            try
+            {
+                Outlet_Edit toWrite = new();
+                toWrite = _outlets.Where(x => x.PLCMonitor == e.NotificationHandle).First();
+                Outlet toApi = new();
+                toApi.OUTLET_ID = toWrite.OUTLET_ID;
+                Params_Twincat2Read params_Twincat2Read = new();
+                params_Twincat2Read.AMSID = toWrite.PlcAddress;
+                params_Twincat2Read.Port = toWrite.Port + "";
+                params_Twincat2Read.VariableName = toWrite.HW_link_name;
+                toApi.CURRENT_VALUE = null;
+                while (toApi.CURRENT_VALUE is null)
+                {
+                    toApi.CURRENT_VALUE = Twincat2Read(params_Twincat2Read);
+                    if (toApi is null)
+                    {
+                        await Task.Delay(5000);
+                    }
+                }
+                string serOut = JsonConvert.SerializeObject(toApi);
+                HttpContent content = new StringContent(serOut, Encoding.UTF8, "application/json");
+                string request = ConfigurationManager.AppSettings["API"];
+                request += "Edit_Outlet?ticket=";
+                request += topLevel.MyResult.MyUserInfo.Ticket;
 
+                HttpResponseMessage response = await client.PostAsync(request, content);
+                responseString = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation(
+                e.NotificationHandle, toWrite.PlcAddress);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "There was a problem contacting the Api");
+            }
+        }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            user.My_UserInfo.UserName = ConfigurationManager.AppSettings["USERNAME"];
-            user.My_UserInfo.Password = ConfigurationManager.AppSettings["ENCRYPTED_PASSWORD"];
-            string serOut = JsonConvert.SerializeObject(user);
-            HttpContent content = new StringContent(serOut, Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PostAsync(ConfigurationManager.AppSettings["API"]+ "Get_Service_Data", content);
-            string responseString = await response.Content.ReadAsStringAsync();
-            TopLevel topLevel = JsonConvert.DeserializeObject<TopLevel>(responseString);
-            //foreach (MyPlc plc in topLevel.MyResult.MyPlCs)
-            //{
-            //    foreach (MyHardwareLink Hardware in plc.MyHardwareLink)
-            //    {
-            //        foreach (MyOutlet outlet in Hardware.MyOutlet)
-            //        {
-
-            //        }
-            //    }
-            //}
-            while (!stoppingToken.IsCancellationRequested)
+            if (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(250, stoppingToken);
+                bool loggedIn = false;
+
+                while (!loggedIn)
+                {
+                    try
+                    {
+                        user.My_UserInfo.UserName = ConfigurationManager.AppSettings["USERNAME"];
+                        user.My_UserInfo.Password = ConfigurationManager.AppSettings["ENCRYPTED_PASSWORD"];
+                        string serOut = JsonConvert.SerializeObject(user);
+                        HttpContent content = new StringContent(serOut, Encoding.UTF8, "application/json");
+                        HttpResponseMessage response = await client.PostAsync(ConfigurationManager.AppSettings["API"] + "Get_Service_Data", content);
+                        responseString = await response.Content.ReadAsStringAsync();
+                        loggedIn = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "There was a problem contacting the Api");
+
+                    }
+                    finally
+                    {
+                        topLevel = JsonConvert.DeserializeObject<TopLevel>(responseString);
+                    }
+                    if(!loggedIn)
+                    {
+                        await Task.Delay(5000, stoppingToken);
+                    }
+                }
+                _outlets = new();
+                foreach (MyPlc plc in topLevel.MyResult.MyPlCs)
+                {
+                    AmsNetId amsNetId = new(plc.Location);
+                    foreach (MyHardwareLink Hardware in plc.MyHardwareLink)
+                    {
+                        foreach (MyOutlet outlet in Hardware.MyOutlet)
+                        {
+                            Outlet_Edit outlet_Edit = new();
+                            outlet_Edit.OUTLET_ID = outlet.OutletId;
+                            outlet_Edit.HW_link_name = Hardware.PlcAddress;
+                            outlet_Edit.CURRENT_VALUE = outlet.CurrentValue + "";
+                            outlet_Edit.PlcAddress = plc.Location;
+                            outlet_Edit.Port = (int)plc.Port;
+                            _outlets.Add(outlet_Edit);
+                        }
+                    }
+                }
+                using (TcAdsClient tcAdsClient = new())
+                {
+                    foreach (Outlet_Edit item in _outlets)
+                    {
+                        item.PLCMonitor = tcAdsClient.AddDeviceNotification(item.PlcAddress, dataStream, 0, 1, AdsTransMode.OnChange, 100, 0, "");
+                    }
+                    tcAdsClient.AdsNotification += new(WriteChange);
+                }
             }
         }
     }
 
     #region Params
+    public partial class Outlet_Edit
+    {
+        public long? OUTLET_ID { get; set; }
+        public string CURRENT_VALUE { get; set; }
+        public string HW_link_name { get; set; }
+        public int Port { get; set; }
+        public string PlcAddress { get; set; }
+        public int PLCMonitor { get; set; }
+    }
     public partial class Outlet
     {
         public long? OUTLET_ID { get; set; }
@@ -85,6 +193,7 @@ namespace MonitorPLCService
         public long? ENTRY_USER_ID { get; set; }
         public string ENTRY_DATE { get; set; }
         public Int32? OWNER_ID { get; set; }
+        public string HW_link_name { get; set; }
     }
     public partial class Hardware_link
     {
@@ -128,6 +237,12 @@ namespace MonitorPLCService
     public partial class Params_Admin_log_in
     {
         public UserInfo My_UserInfo { get; set; }
+    }
+    public partial class Params_Twincat2Read
+    {
+        public string VariableName { get; set; }
+        public string AMSID { get; set; }
+        public string Port { get; set; }
     }
     #endregion
     #region Test
