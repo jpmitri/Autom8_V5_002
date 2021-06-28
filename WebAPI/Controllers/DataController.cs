@@ -7,22 +7,14 @@ using System.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using BLC;
-using Microsoft.AspNetCore.SignalR;
-using WebAPI.GetHub;
-
 [Route("api/[controller]")]
 [ApiController]
 public partial class DataController : ControllerBase
 {
-    #region Members
-    private IHubContext<OutletHub> _hub;
-    public DataController(IHubContext<OutletHub> hub)
-    {
-        _hub = hub;
-    }
-    #endregion
-    #region Extract_Ticket
-    private string Extract_Ticket()
+#region Members
+#endregion
+#region Extract_Ticket
+private string Extract_Ticket()
 {
 #region Declaration And Initialization Section.
 string str_Ticket = string.Empty;
@@ -756,80 +748,12 @@ oResult_Edit_Hardware_link.ExceptionMsg = ex.Message;
 return oResult_Edit_Hardware_link;
 #endregion
 }
-    #endregion
-    #region Edit_Outlet
-    //Implemented in SignalR
-    [HttpPost]
-    [Route("Edit_Outlet")]
-    public Result_Edit_Outlet Edit_Outlet(Outlet i_Outlet)
-    {
-        #region Declaration And Initialization Section.
-        string i_Ticket = string.Empty;
-        Result_Edit_Outlet oResult_Edit_Outlet = new Result_Edit_Outlet();
-        #endregion
-        #region Body Section.
-        try
-        {
-
-            // Ticket Checking
-            //-------------------
-            if (ConfigurationManager.AppSettings["ENABLE_TICKET"] != null)
-            {
-                if (ConfigurationManager.AppSettings["ENABLE_TICKET"] == "1")
-                {
-                    if
-                    (
-                    (HttpContext.Request.Query["Ticket"].FirstOrDefault() != null) &&
-                    (HttpContext.Request.Query["Ticket"].ToString() != "")
-                    )
-                    {
-                        i_Ticket = HttpContext.Request.Query["Ticket"].ToString();
-                    }
-                    else
-                    {
-                        throw new Exception("Invalid Ticket");
-                    }
-                }
-            }
-            //-------------------
-
-            BLC.BLC oBLC_Default = new BLC.BLC();
-            BLCInitializer oBLCInitializer = oBLC_Default.Prepare_BLCInitializer(i_Ticket, BLC.BLC.Enum_API_Method.Edit_Outlet);
-            using (BLC.BLC oBLC = new BLC.BLC(oBLCInitializer))
-            {
-                oBLC.Edit_Outlet(i_Outlet);
-                oResult_Edit_Outlet.My_Outlet = i_Outlet;
-                if (i_Outlet.OUTLET_ID != -1 && i_Outlet.CURRENT_VALUE != "-1")
-                {
-                    UpdateClients(i_Outlet);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.GetType().FullName != "BLC.BLCException")
-            {
-                oResult_Edit_Outlet.ExceptionMsg = string.Format("Edit_Outlet : {0}", ex.Message);
-            }
-            else
-            {
-                oResult_Edit_Outlet.ExceptionMsg = ex.Message;
-            }
-        }
-        #endregion
-        #region Return Section
-        return oResult_Edit_Outlet;
-        #endregion
-    }
-
-    
-    public void UpdateClients(Outlet i_Outlet)
-    {
-        _hub.Clients.All.SendAsync("updatedOutlet", i_Outlet);
-    }
-    #endregion
-    #region Edit_Outlet_type
-    [HttpPost]
+#endregion
+#region Edit_Outlet
+//Implemented in SignalR
+#endregion
+#region Edit_Outlet_type
+[HttpPost]
 [Route("Edit_Outlet_type")]
 public Result_Edit_Outlet_type Edit_Outlet_type(Outlet_type i_Outlet_type)
 {
@@ -1946,12 +1870,7 @@ public Hardware_link My_Hardware_link { get; set; }
 }
 #endregion
 #region Result_Edit_Outlet
-public partial class Result_Edit_Outlet : Action_Result
-{
-#region Properties.
-public Outlet My_Outlet { get; set; }
-#endregion
-}
+//Moved To SignlaR
 #endregion
 #region Result_Edit_Outlet_type
 public partial class Result_Edit_Outlet_type : Action_Result
