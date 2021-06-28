@@ -1870,12 +1870,7 @@ public Hardware_link My_Hardware_link { get; set; }
 }
 #endregion
 #region Result_Edit_Outlet
-public partial class Result_Edit_Outlet : Action_Result
-{
-#region Properties.
-public Outlet My_Outlet { get; set; }
-#endregion
-}
+//Moved To SignlaR
 #endregion
 #region Result_Edit_Outlet_type
 public partial class Result_Edit_Outlet_type : Action_Result

@@ -69,7 +69,7 @@ namespace BLC
             #region Declaration And Initialization Section.
             Dictionary<string, string> oList = new Dictionary<string, string>();
             string str_Ticket_PlainText = string.Empty;
-            Crypto.MiniCryptoHelper oCrypto = new Crypto.MiniCryptoHelper();
+            Crypto.Crypto oCrypto = new Crypto.Crypto();
             string[] oMainTempList = null;
             string[] oSubTempList = null;
             #endregion
@@ -83,7 +83,7 @@ namespace BLC
             if (!string.IsNullOrEmpty(i_Input))
             {
                 str_Ticket_PlainText = System.Net.WebUtility.UrlDecode(i_Input);
-                str_Ticket_PlainText = oCrypto.Decrypt(str_Ticket_PlainText);
+                str_Ticket_PlainText = oCrypto.DescrambleQueryString(str_Ticket_PlainText);
 
                 if (!string.IsNullOrEmpty(str_Ticket_PlainText))
                 {
