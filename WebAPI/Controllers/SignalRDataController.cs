@@ -23,7 +23,7 @@ namespace WebAPI.Controllers
         }
         #region Edit_Outlet
         [HttpPost]
-        [Route("Edit_Outlet")]
+        [Route("api/[controller]/Edit_Outlet")]
         public Result_Edit_Outlet Edit_Outlet(Outlet i_Outlet)
         {
             #region Declaration And Initialization Section.
