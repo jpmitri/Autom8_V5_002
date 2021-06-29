@@ -32,6 +32,8 @@ namespace UnitTesting
             Console.WriteLine("001 --> Generate Colors");
             Console.WriteLine("002 --> Create Outlet Type");
             Console.WriteLine("003 --> Create Outlet");
+            Console.WriteLine("004 --> Create New User");
+
 
             Console.WriteLine("009 --> Init Test");
 
@@ -46,7 +48,7 @@ namespace UnitTesting
             while (true)
             {
                 str_Option = Console.ReadLine();
-                if(str_Option=="Exit")
+                if (str_Option == "Exit")
                 { return; }
                 Params_Edit_Ui_List ui_List = new();
                 ui_List.My_List_To_Edit = new();
@@ -65,7 +67,8 @@ namespace UnitTesting
                 switch (str_Option)
                 {
                     case "001":
-                        string[] colors = {
+                        {
+                            string[] colors = {
                                         "#809bceff",
                                         "#55b493ff",
                                         "#ffaa89ff",
@@ -87,128 +90,155 @@ namespace UnitTesting
                                         "#86e8d2ff",
                                         "#6e5bd8ff"
                                         };
-                        ui_List.My_List_To_Edit = new();
-                        foreach (String color in colors)
-                        {
-                            BLC.Ui ui = new();
-                            ui.UI_ID = -1;
-                            ui.COLOR = color;
-                            ui.OTHER = "";
-                            ui.OWNER_ID = 1;
-                            ui.ENTRY_USER_ID = 1;
-                            ui.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
-                            ui_List.My_List_To_Edit.Add(ui);
+                            ui_List.My_List_To_Edit = new();
+                            foreach (String color in colors)
+                            {
+                                BLC.Ui ui = new();
+                                ui.UI_ID = -1;
+                                ui.COLOR = color;
+                                ui.OTHER = "";
+                                ui.OWNER_ID = 1;
+                                ui.ENTRY_USER_ID = 1;
+                                ui.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
+                                ui_List.My_List_To_Edit.Add(ui);
+                            }
+                            oBLC.Edit_Ui_List(ui_List);
                         }
-                        oBLC.Edit_Ui_List(ui_List);
                         break;
                     case "002":
-                        params_Edit_Outlet_Type_List.My_List_To_Edit = new();
-                        Outlet_type outlet_Type0 = new();
-                        outlet_Type0.OUTLET_TYPE_ID = -1;
-                        outlet_Type0.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
-                        outlet_Type0.ENTRY_USER_ID = 1;
-                        outlet_Type0.OWNER_ID = 1;
-                        outlet_Type0.IS_DIGITAL = true;
-                        outlet_Type0.MIN_VALUE = 0;
-                        outlet_Type0.MAX_VALUE = 1;
-                        outlet_Type0.NAME = "Digital Outlet TwinCat 2";
-                        params_Edit_Outlet_Type_List.My_List_To_Edit.Add(outlet_Type0);
-                        Outlet_type outlet_Type1 = new();
-                        outlet_Type1.OUTLET_TYPE_ID = -1;
-                        outlet_Type1.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
-                        outlet_Type1.ENTRY_USER_ID = 1;
-                        outlet_Type1.OWNER_ID = 1;
-                        outlet_Type1.IS_DIGITAL = false;
-                        outlet_Type1.MIN_VALUE = 0;
-                        outlet_Type1.MAX_VALUE = 255;
-                        outlet_Type1.NAME = "Analogue Outlet TwinCat 2";
-                        params_Edit_Outlet_Type_List.My_List_To_Edit.Add(outlet_Type1);
-                        Outlet_type outlet_Type2 = new();
-                        outlet_Type2.OUTLET_TYPE_ID = -1;
-                        outlet_Type2.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
-                        outlet_Type2.ENTRY_USER_ID = 1;
-                        outlet_Type2.OWNER_ID = 1;
-                        outlet_Type2.IS_DIGITAL = true;
-                        outlet_Type2.MIN_VALUE = 0;
-                        outlet_Type2.MAX_VALUE = 1;
-                        outlet_Type2.NAME = "Curtain Outlet TwinCat 2";
-                        params_Edit_Outlet_Type_List.My_List_To_Edit.Add(outlet_Type2);
-                        Outlet_type outlet_Type3 = new();
-                        outlet_Type3.OUTLET_TYPE_ID = -1;
-                        outlet_Type3.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
-                        outlet_Type3.ENTRY_USER_ID = 1;
-                        outlet_Type3.OWNER_ID = 1;
-                        outlet_Type3.IS_DIGITAL = true;
-                        outlet_Type3.MIN_VALUE = 0;
-                        outlet_Type3.MAX_VALUE = 1;
-                        outlet_Type3.NAME = "Door Outlet TwinCat 2";
-                        params_Edit_Outlet_Type_List.My_List_To_Edit.Add(outlet_Type3);
-                        oBLC.Edit_Outlet_type_List(params_Edit_Outlet_Type_List);
+                        {
+                            params_Edit_Outlet_Type_List.My_List_To_Edit = new();
+                            Outlet_type outlet_Type0 = new();
+                            outlet_Type0.OUTLET_TYPE_ID = -1;
+                            outlet_Type0.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
+                            outlet_Type0.ENTRY_USER_ID = 1;
+                            outlet_Type0.OWNER_ID = 1;
+                            outlet_Type0.IS_DIGITAL = true;
+                            outlet_Type0.MIN_VALUE = 0;
+                            outlet_Type0.MAX_VALUE = 1;
+                            outlet_Type0.NAME = "Digital Outlet TwinCat 2";
+                            params_Edit_Outlet_Type_List.My_List_To_Edit.Add(outlet_Type0);
+                            Outlet_type outlet_Type1 = new();
+                            outlet_Type1.OUTLET_TYPE_ID = -1;
+                            outlet_Type1.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
+                            outlet_Type1.ENTRY_USER_ID = 1;
+                            outlet_Type1.OWNER_ID = 1;
+                            outlet_Type1.IS_DIGITAL = false;
+                            outlet_Type1.MIN_VALUE = 0;
+                            outlet_Type1.MAX_VALUE = 255;
+                            outlet_Type1.NAME = "Analogue Outlet TwinCat 2";
+                            params_Edit_Outlet_Type_List.My_List_To_Edit.Add(outlet_Type1);
+                            Outlet_type outlet_Type2 = new();
+                            outlet_Type2.OUTLET_TYPE_ID = -1;
+                            outlet_Type2.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
+                            outlet_Type2.ENTRY_USER_ID = 1;
+                            outlet_Type2.OWNER_ID = 1;
+                            outlet_Type2.IS_DIGITAL = true;
+                            outlet_Type2.MIN_VALUE = 0;
+                            outlet_Type2.MAX_VALUE = 1;
+                            outlet_Type2.NAME = "Curtain Outlet TwinCat 2";
+                            params_Edit_Outlet_Type_List.My_List_To_Edit.Add(outlet_Type2);
+                            Outlet_type outlet_Type3 = new();
+                            outlet_Type3.OUTLET_TYPE_ID = -1;
+                            outlet_Type3.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
+                            outlet_Type3.ENTRY_USER_ID = 1;
+                            outlet_Type3.OWNER_ID = 1;
+                            outlet_Type3.IS_DIGITAL = true;
+                            outlet_Type3.MIN_VALUE = 0;
+                            outlet_Type3.MAX_VALUE = 1;
+                            outlet_Type3.NAME = "Door Outlet TwinCat 2";
+                            params_Edit_Outlet_Type_List.My_List_To_Edit.Add(outlet_Type3);
+                            oBLC.Edit_Outlet_type_List(params_Edit_Outlet_Type_List);
+                        }
                         break;
                     case "003":
+                        { }
+                        break;
+                    case "004":
+                        {
+                            User user = new();
+                            user.USER_ID = -1;
+                            user.OWNER_ID = 1;
+                            Console.WriteLine("Enter Username");
+                            user.USERNAME = Console.ReadLine();
+                            Console.WriteLine("Enter Password");
+                            user.PASSWORD = Console.ReadLine();
+                            user.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
+                            user.IS_ACTIVE = true;
+                            user.USER_TYPE_CODE = "002";
+                            oBLC.Edit_User(user);
+                        }
                         break;
                     case "009":
-                        params_Edit_Outlet_List.My_List_To_Edit = new();
-                        Floor floor = new();
-                        floor.FLOOR_ID = -1;
-                        floor.NAME = "Test Floor 1";
-                        oBLC.Edit_Floor(floor);
-                        Room room = new();
-                        room.ROOM_ID = -1;
-                        room.FLOOR_ID = floor.FLOOR_ID;
-                        room.NAME = "Test Room";
-                        oBLC.Edit_Room(room);
-                        Outlet outletDigital = new();
-                        outletDigital.OUTLET_ID = -1;
-                        outletDigital.ROOM_ID = room.ROOM_ID;
-                        outletDigital.OUTLET_TYPE_ID = 1;
-                        outletDigital.HARDWARE_LINK_ID = 1;
-                        outletDigital.NAME = "Digital Test";
-                        outletDigital.CURRENT_VALUE = "0";
-                        params_Edit_Outlet_List.My_List_To_Edit.Add(outletDigital);
-                        Outlet outletAnalog = new();
-                        outletAnalog.OUTLET_ID = -1;
-                        outletAnalog.ROOM_ID = room.ROOM_ID;
-                        outletAnalog.OUTLET_TYPE_ID = 2;
-                        outletAnalog.HARDWARE_LINK_ID = 2;
-                        outletAnalog.NAME = "Analog Test";
-                        outletAnalog.CURRENT_VALUE = "0";
-                        params_Edit_Outlet_List.My_List_To_Edit.Add(outletAnalog);
-                        Outlet outletCurtain = new();
-                        outletCurtain.OUTLET_ID = -1;
-                        outletCurtain.ROOM_ID = room.ROOM_ID;
-                        outletCurtain.OUTLET_TYPE_ID = 3;
-                        outletCurtain.HARDWARE_LINK_ID = 1;
-                        outletCurtain.NAME = "Curtain Test";
-                        outletCurtain.CURRENT_VALUE = "0";
-                        params_Edit_Outlet_List.My_List_To_Edit.Add(outletCurtain);
-                        oBLC.Edit_Outlet_List(params_Edit_Outlet_List);
+                        {
+                            params_Edit_Outlet_List.My_List_To_Edit = new();
+                            Floor floor = new();
+                            floor.FLOOR_ID = -1;
+                            floor.NAME = "Test Floor 1";
+                            oBLC.Edit_Floor(floor);
+                            Room room = new();
+                            room.ROOM_ID = -1;
+                            room.FLOOR_ID = floor.FLOOR_ID;
+                            room.NAME = "Test Room";
+                            oBLC.Edit_Room(room);
+                            Outlet outletDigital = new();
+                            outletDigital.OUTLET_ID = -1;
+                            outletDigital.ROOM_ID = room.ROOM_ID;
+                            outletDigital.OUTLET_TYPE_ID = 1;
+                            outletDigital.HARDWARE_LINK_ID = 1;
+                            outletDigital.NAME = "Digital Test";
+                            outletDigital.CURRENT_VALUE = "0";
+                            params_Edit_Outlet_List.My_List_To_Edit.Add(outletDigital);
+                            Outlet outletAnalog = new();
+                            outletAnalog.OUTLET_ID = -1;
+                            outletAnalog.ROOM_ID = room.ROOM_ID;
+                            outletAnalog.OUTLET_TYPE_ID = 2;
+                            outletAnalog.HARDWARE_LINK_ID = 2;
+                            outletAnalog.NAME = "Analog Test";
+                            outletAnalog.CURRENT_VALUE = "0";
+                            params_Edit_Outlet_List.My_List_To_Edit.Add(outletAnalog);
+                            Outlet outletCurtain = new();
+                            outletCurtain.OUTLET_ID = -1;
+                            outletCurtain.ROOM_ID = room.ROOM_ID;
+                            outletCurtain.OUTLET_TYPE_ID = 3;
+                            outletCurtain.HARDWARE_LINK_ID = 1;
+                            outletCurtain.NAME = "Curtain Test";
+                            outletCurtain.CURRENT_VALUE = "0";
+                            params_Edit_Outlet_List.My_List_To_Edit.Add(outletCurtain);
+                            oBLC.Edit_Outlet_List(params_Edit_Outlet_List);
+                        }
                         break;
                     case "010":
-                        params_Get_All_Data.My_UserInfo = new();
-                        params_Get_All_Data.My_UserInfo.UserName = "Admin";
-                        params_Get_All_Data.My_UserInfo.Password = "Admin";
-                        data= oBLC.Get_All_Data(params_Get_All_Data);
-                        outlet = new();
-                        outlet = data.Floors[1].MyRooms[0].MyOutlets[0];
-                        outlet.CURRENT_VALUE = "1";
-                        oBLC.Edit_Outlet(outlet);
-                        System.Threading.Thread.Sleep(1000);
-                        outlet.CURRENT_VALUE = "0";
-                        oBLC.Edit_Outlet(outlet);
+                        {
+                            params_Get_All_Data.My_UserInfo = new();
+                            params_Get_All_Data.My_UserInfo.UserName = "Admin";
+                            params_Get_All_Data.My_UserInfo.Password = "Admin";
+                            data = oBLC.Get_All_Data(params_Get_All_Data);
+                            outlet = new();
+                            outlet = data.Floors[1].MyRooms[0].MyOutlets[0];
+                            outlet.CURRENT_VALUE = "1";
+                            oBLC.Edit_Outlet(outlet);
+                            System.Threading.Thread.Sleep(1000);
+                            outlet.CURRENT_VALUE = "0";
+                            oBLC.Edit_Outlet(outlet);
+                        }
                         break;
                     case "011":
-                        DigitalWrite();
+                        {
+                            DigitalWrite();
+                        }
                         break;
                     case "012":
-                        params_Get_All_Data.My_UserInfo = new();
-                        params_Get_All_Data.My_UserInfo.UserName = "Admin";
-                        params_Get_All_Data.My_UserInfo.Password = "Admin";
-                        data = oBLC.Get_All_Data(params_Get_All_Data);
-                        outlet = new();
-                        outlet = data.Floors[1].MyRooms[0].MyOutlets[2];
-                        outlet.CURRENT_VALUE = "1";
-                        oBLC.Edit_Outlet(outlet);
+                        {
+                            params_Get_All_Data.My_UserInfo = new();
+                            params_Get_All_Data.My_UserInfo.UserName = "Admin";
+                            params_Get_All_Data.My_UserInfo.Password = "Admin";
+                            data = oBLC.Get_All_Data(params_Get_All_Data);
+                            outlet = new();
+                            outlet = data.Floors[1].MyRooms[0].MyOutlets[2];
+                            outlet.CURRENT_VALUE = "1";
+                            oBLC.Edit_Outlet(outlet);
+                        }
                         break;
                 }
             }
