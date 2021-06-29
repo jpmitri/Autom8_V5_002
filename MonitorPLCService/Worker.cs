@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using TwinCAT.Ads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Microsoft.AspNetCore.Mvc;
+
+using TwinCAT.Ads;
 
 namespace MonitorPLCService
 {
@@ -163,7 +163,9 @@ namespace MonitorPLCService
                 {
                     foreach (Outlet_Edit item in _outlets)
                     {
-                        item.PLCMonitor = tcAdsClient.AddDeviceNotification(item.HW_link_name, dataStream, 0, 1, AdsTransMode.OnChange, 100, 0, "");
+                        string name = item.HW_link_name;
+                        name.Replace("_out_plc_", "_in_");
+                        item.PLCMonitor = tcAdsClient.AddDeviceNotification(name, dataStream, 0, 1, AdsTransMode.OnChange, 100, 0, "");
                     }
                     tcAdsClient.AdsNotification += new(WriteChange);
                 }
