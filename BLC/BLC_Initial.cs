@@ -118,9 +118,9 @@ namespace BLC
             OnPostEvent_Get_Hardware_link_By_HARDWARE_LINK_ID += BLC_OnPostEvent_Get_Hardware_link_By_HARDWARE_LINK_ID;
             OnPreEvent_Edit_Outlet += BLC_OnPreEvent_Edit_Outlet;
             OnPostEvent_Edit_User += BLC_OnPostEvent_Edit_User;
+            OnPreEvent_Edit_User += BLC_OnPreEvent_Edit_User;
             #endregion
         }
-
         #endregion
         #region IDisposable Members
         public void Dispose()
@@ -338,10 +338,35 @@ namespace BLC
                 }
             }
         }
-        private void BLC_OnPostEvent_Edit_User(User i_User, Enum_EditMode i_Enum_EditMode)
+        private void BLC_OnPreEvent_Edit_User(User i_User, Enum_EditMode i_Enum_EditMode)
         {
             MiniCryptoHelper miniCrypto = new();
             i_User.PASSWORD = miniCrypto.Encrypt(i_User.PASSWORD);
+        }
+        private void BLC_OnPostEvent_Edit_User(User i_User, Enum_EditMode i_Enum_EditMode)
+        {
+            if(i_Enum_EditMode== Enum_EditMode.Add)
+            {
+                Params_Get_Outlet_By_OWNER_ID params_Get_Outlet_By_OWNER_ID = new();
+                params_Get_Outlet_By_OWNER_ID.OWNER_ID = i_User.OWNER_ID;
+                Params_Get_Ui_By_OWNER_ID params_Get_Ui_By_OWNER_ID = new();
+                params_Get_Ui_By_OWNER_ID.OWNER_ID = i_User.OWNER_ID;
+                List<Outlet> outlet = Get_Outlet_By_OWNER_ID(params_Get_Outlet_By_OWNER_ID);
+                List<Ui> Ui = Get_Ui_By_OWNER_ID(params_Get_Ui_By_OWNER_ID);
+                Params_Edit_Outlet_ui_List params_Edit_Outlet_Ui_List = new();
+                params_Edit_Outlet_Ui_List.My_List_To_Edit = new();
+                Random rand = new();
+                foreach(Outlet i in outlet)
+                {
+                    Outlet_ui x = new();
+                    x.OUTLET_ID = i.OUTLET_ID;
+                    x.USER_ID = i_User.USER_ID;
+                    x.UI_ID = Ui[rand.Next(0, Ui.Count - 1)].UI_ID;
+                    params_Edit_Outlet_Ui_List.My_List_To_Edit.Add(x);
+                }
+                Edit_Outlet_ui_List(params_Edit_Outlet_Ui_List);
+            }
+            
         }
         #endregion
     }
