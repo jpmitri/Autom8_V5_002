@@ -360,6 +360,7 @@ namespace BLC
                 foreach(Outlet i in outlet)
                 {
                     Outlet_ui x = new();
+                    x.OUTLET_UI_ID = -1;
                     x.OUTLET_ID = i.OUTLET_ID;
                     x.USER_ID = i_User.USER_ID;
                     x.UI_ID = Ui[rand.Next(0, Ui.Count - 1)].UI_ID;
