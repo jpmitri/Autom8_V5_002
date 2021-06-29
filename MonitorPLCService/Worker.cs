@@ -29,12 +29,12 @@ namespace MonitorPLCService
         private List<Outlet_Edit> _outlets;
         private TopLevel topLevel;
         private string responseString = string.Empty;
+        private Tools.Tools oTools;
         public Worker(ILogger<Worker> logger)
         {
             _logger = logger;
         }
-
-        public override Task StartAsync(CancellationToken cancellationToken)
+        public async void defineAll()
         {
             outlets = new();
             client = new();
@@ -43,14 +43,61 @@ namespace MonitorPLCService
             plc = new();
             dataStream = new();
             topLevel = new();
-            return base.StartAsync(cancellationToken);
-        }
+            bool loggedIn = false;
+            oTools = new();
+            while (!loggedIn)
+            {
+                try
+                {
+                    user.My_UserInfo.UserName = ConfigurationManager.AppSettings["USERNAME"];
+                    user.My_UserInfo.Password = ConfigurationManager.AppSettings["ENCRYPTED_PASSWORD"];
+                    string serOut = JsonConvert.SerializeObject(user);
+                    HttpContent content = new StringContent(serOut, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync(ConfigurationManager.AppSettings["API"] + "Get_Service_Data", content);
+                    responseString = await response.Content.ReadAsStringAsync();
+                    loggedIn = true;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "There was a problem contacting the Api");
 
-        public override Task StopAsync(CancellationToken cancellationToken)
-        {
-            client.Dispose();
-            _logger.LogInformation("The service has been stopped...");
-            return base.StopAsync(cancellationToken);
+                }
+                finally
+                {
+                    topLevel = JsonConvert.DeserializeObject<TopLevel>(responseString);
+                }
+                if (!loggedIn)
+                {
+                    await Task.Delay(5000);
+                }
+            }
+            _outlets = new();
+            foreach (MyPlc plc in topLevel.MyResult.MyPlCs)
+            {
+                foreach (MyHardwareLink Hardware in plc.MyHardwareLink)
+                {
+                    foreach (MyOutlet outlet in Hardware.MyOutlet)
+                    {
+                        Outlet_Edit outlet_Edit = new();
+                        outlet_Edit.OUTLET_ID = outlet.OutletId;
+                        outlet_Edit.HW_link_name = Hardware.PlcAddress;
+                        outlet_Edit.CURRENT_VALUE = outlet.CurrentValue + "";
+                        outlet_Edit.PlcAddress = plc.Location;
+                        outlet_Edit.Port = (int)plc.Port;
+                        outlet_Edit.MyOutlet = new();
+                        outlet_Edit.MyOutlet.CURRENT_VALUE = outlet.CurrentValue + "";
+                        outlet_Edit.MyOutlet.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
+                        outlet_Edit.MyOutlet.OUTLET_ID = outlet.OutletId;
+                        outlet_Edit.MyOutlet.OUTLET_TYPE_ID = (int)outlet.OutletTypeId;
+                        outlet_Edit.MyOutlet.HARDWARE_LINK_ID = outlet.HardwareLinkId;
+                        outlet_Edit.MyOutlet.ROOM_ID = (int)outlet.RoomId;
+                        outlet_Edit.MyOutlet.NAME = outlet.Name;
+                        outlet_Edit.MyOutlet.ENTRY_USER_ID = topLevel.MyResult.MyUserInfo.UserId;
+                        outlet_Edit.MyOutlet.OWNER_ID = (int)topLevel.MyResult.MyUserInfo.OwnerId;
+                        _outlets.Add(outlet_Edit);
+                    }
+                }
+            }
         }
         public String Twincat2Read(Params_Twincat2Read i_Params_Twincat2Read)
         {
@@ -72,27 +119,25 @@ namespace MonitorPLCService
                 return null;
             }
         }
-        public async void WriteChange(object sender, AdsNotificationEventArgs e)
+        public override Task StartAsync(CancellationToken cancellationToken)
+        {
+            defineAll();
+            return base.StartAsync(cancellationToken);
+        }
+
+        public override Task StopAsync(CancellationToken cancellationToken)
+        {
+            client.Dispose();
+            _logger.LogInformation("The service has been stopped...");
+            return base.StopAsync(cancellationToken);
+        }
+
+        public async void WriteChange(Outlet_Edit toWrite)
         {
             try
             {
-                Outlet_Edit toWrite = new();
-                toWrite = _outlets.Where(x => x.PLCMonitor == e.NotificationHandle).First();
                 Outlet toApi = new();
-                toApi.OUTLET_ID = toWrite.OUTLET_ID;
-                Params_Twincat2Read params_Twincat2Read = new();
-                params_Twincat2Read.AMSID = toWrite.PlcAddress;
-                params_Twincat2Read.Port = toWrite.Port + "";
-                params_Twincat2Read.VariableName = toWrite.HW_link_name;
-                toApi.CURRENT_VALUE = null;
-                while (toApi.CURRENT_VALUE is null)
-                {
-                    toApi.CURRENT_VALUE = Twincat2Read(params_Twincat2Read);
-                    if (toApi.CURRENT_VALUE is null)
-                    {
-                        await Task.Delay(5000);
-                    }
-                }
+                toApi = toWrite.MyOutlet;
                 string serOut = JsonConvert.SerializeObject(toApi);
                 HttpContent content = new StringContent(serOut, Encoding.UTF8, "application/json");
                 string request = ConfigurationManager.AppSettings["API"];
@@ -101,8 +146,7 @@ namespace MonitorPLCService
 
                 HttpResponseMessage response = await client.PostAsync(request, content);
                 responseString = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation(
-                e.NotificationHandle, toWrite.HW_link_name);
+                _logger.LogInformation(toWrite.HW_link_name, toApi.CURRENT_VALUE);
 
             }
             catch (Exception ex)
@@ -112,63 +156,21 @@ namespace MonitorPLCService
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (!stoppingToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
-                bool loggedIn = false;
-
-                while (!loggedIn)
+                foreach (Outlet_Edit outlet in _outlets)
                 {
-                    try
+                    Params_Twincat2Read params_Twincat2Read = new();
+                    params_Twincat2Read.AMSID = outlet.PlcAddress;
+                    params_Twincat2Read.Port = outlet.Port + "";
+                    params_Twincat2Read.VariableName = outlet.HW_link_name;
+                    outlet.MyOutlet.CURRENT_VALUE = Twincat2Read(params_Twincat2Read);
+                    if (outlet.MyOutlet.CURRENT_VALUE != outlet.CURRENT_VALUE)
                     {
-                        user.My_UserInfo.UserName = ConfigurationManager.AppSettings["USERNAME"];
-                        user.My_UserInfo.Password = ConfigurationManager.AppSettings["ENCRYPTED_PASSWORD"];
-                        string serOut = JsonConvert.SerializeObject(user);
-                        HttpContent content = new StringContent(serOut, Encoding.UTF8, "application/json");
-                        HttpResponseMessage response = await client.PostAsync(ConfigurationManager.AppSettings["API"] + "Get_Service_Data", content);
-                        responseString = await response.Content.ReadAsStringAsync();
-                        loggedIn = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "There was a problem contacting the Api");
-
-                    }
-                    finally
-                    {
-                        topLevel = JsonConvert.DeserializeObject<TopLevel>(responseString);
-                    }
-                    if (!loggedIn)
-                    {
-                        await Task.Delay(5000, stoppingToken);
+                        WriteChange(outlet);
                     }
                 }
-                _outlets = new();
-                foreach (MyPlc plc in topLevel.MyResult.MyPlCs)
-                {
-                    foreach (MyHardwareLink Hardware in plc.MyHardwareLink)
-                    {
-                        foreach (MyOutlet outlet in Hardware.MyOutlet)
-                        {
-                            Outlet_Edit outlet_Edit = new();
-                            outlet_Edit.OUTLET_ID = outlet.OutletId;
-                            outlet_Edit.HW_link_name = Hardware.PlcAddress;
-                            outlet_Edit.CURRENT_VALUE = outlet.CurrentValue + "";
-                            outlet_Edit.PlcAddress = plc.Location;
-                            outlet_Edit.Port = (int)plc.Port;
-                            _outlets.Add(outlet_Edit);
-                        }
-                    }
-                }
-                using (TcAdsClient tcAdsClient = new())
-                {
-                    foreach (Outlet_Edit item in _outlets)
-                    {
-                        string name = item.HW_link_name;
-                        name.Replace("_out_plc_", "_in_");
-                        item.PLCMonitor = tcAdsClient.AddDeviceNotification(name, dataStream, 0, 1, AdsTransMode.OnChange, 100, 0, "");
-                    }
-                    tcAdsClient.AdsNotification += new(WriteChange);
-                }
+                await Task.Delay(500, stoppingToken);
             }
         }
     }
@@ -176,6 +178,7 @@ namespace MonitorPLCService
     #region Params
     public partial class Outlet_Edit
     {
+        public Outlet MyOutlet { get; set; }
         public long? OUTLET_ID { get; set; }
         public string CURRENT_VALUE { get; set; }
         public string HW_link_name { get; set; }
