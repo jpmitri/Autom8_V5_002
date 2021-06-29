@@ -28,23 +28,6 @@ namespace UnitTesting
             Tools.Tools oTools = new Tools.Tools();
             #endregion
 
-            Console.WriteLine("Enter An Option:");
-            Console.WriteLine("001 --> Generate Colors");
-            Console.WriteLine("002 --> Create Outlet Type");
-            Console.WriteLine("003 --> Create Outlet");
-            Console.WriteLine("004 --> Create New User");
-
-
-            Console.WriteLine("009 --> Init Test");
-
-            Console.WriteLine("010 --> Test Digital");
-            Console.WriteLine("011 --> Test Dimmer");
-            Console.WriteLine("012 --> Test Curtain");
-
-            Console.WriteLine("Exit --> To Exit");
-
-
-
             while (true)
             {
                 Console.WriteLine("Enter An Option:");
