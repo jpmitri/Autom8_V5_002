@@ -30,6 +30,7 @@ namespace MonitorPLCService
         private TopLevel topLevel;
         private string responseString = string.Empty;
         private Tools.Tools oTools;
+        private int delay = 500;
         public Worker(ILogger<Worker> logger)
         {
             _logger = logger;
@@ -45,6 +46,14 @@ namespace MonitorPLCService
             topLevel = new();
             bool loggedIn = false;
             oTools = new();
+            if(int.TryParse(ConfigurationManager.AppSettings["DELAY"],out int x))
+            {
+                delay = x;
+            }
+            else
+            {
+                _logger.LogError("Unable To Parse Delay Using Default Delay of 500ms or 0.5s");
+            }
             while (!loggedIn)
             {
                 try
