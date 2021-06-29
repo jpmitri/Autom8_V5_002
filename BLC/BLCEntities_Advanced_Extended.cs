@@ -13,6 +13,28 @@ using System.Diagnostics;
 using System.Data.SqlClient;
 using System.Threading;
 
+
+
+
+
+
+
 namespace BLC
 {
+#region Hardware_link
+public partial class Hardware_link
+{
+#region Advanced Properties
+public List<Outlet> My_Outlet {get;set;}
+#endregion
+}
+#endregion
+#region Plc
+public partial class Plc
+{
+#region Advanced Properties
+public List<Hardware_link> My_Hardware_link {get;set;}
+#endregion
+}
+#endregion
 }

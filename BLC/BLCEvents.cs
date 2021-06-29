@@ -15,8 +15,35 @@ public partial class BLC
 public enum Enum_API_Method
 {
 Get_All_Data,
+Get_User_By_OWNER_ID,
 Edit_Outlet,
-Edit_Outlet_ui
+Edit_Outlet_ui,
+Edit_User,
+Delete_User,
+Admin_log_in,
+Get_Ui_By_OWNER_ID,
+Get_Plc_By_OWNER_ID,
+Get_Hardware_link_By_OWNER_ID,
+Get_Outlet_type_By_OWNER_ID,
+Get_Floor_By_OWNER_ID,
+Get_Room_By_OWNER_ID,
+Get_Outlet_By_OWNER_ID,
+Get_Outlet_ui_By_OWNER_ID,
+Edit_Ui,
+Edit_Plc,
+Edit_Hardware_link,
+Edit_Outlet_type,
+Edit_Floor,
+Edit_Room,
+Delete_Outlet,
+Delete_Ui,
+Delete_Plc,
+Delete_Hardware_link,
+Delete_Outlet_type,
+Delete_Floor,
+Delete_Room,
+Delete_Outlet_ui,
+Get_Service_Data
 }
 #endregion
 
@@ -92,10 +119,18 @@ public  delegate void PreEvent_Handler_Get_Outlet_By_ROOM_ID(Params_Get_Outlet_B
 public  delegate void  PostEvent_Handler_Get_Outlet_By_ROOM_ID(ref List<Outlet>  i_Result, Params_Get_Outlet_By_ROOM_ID i_Params_Get_Outlet_By_ROOM_ID);
 public event PreEvent_Handler_Get_Outlet_By_ROOM_ID OnPreEvent_Get_Outlet_By_ROOM_ID;
 public event PostEvent_Handler_Get_Outlet_By_ROOM_ID OnPostEvent_Get_Outlet_By_ROOM_ID;
+public  delegate void PreEvent_Handler_Get_Plc_By_OWNER_ID(Params_Get_Plc_By_OWNER_ID i_Params_Get_Plc_By_OWNER_ID);
+public  delegate void  PostEvent_Handler_Get_Plc_By_OWNER_ID(List<Plc>  i_Result, Params_Get_Plc_By_OWNER_ID i_Params_Get_Plc_By_OWNER_ID);
+public event PreEvent_Handler_Get_Plc_By_OWNER_ID OnPreEvent_Get_Plc_By_OWNER_ID;
+public event PostEvent_Handler_Get_Plc_By_OWNER_ID OnPostEvent_Get_Plc_By_OWNER_ID;
 public  delegate void PreEvent_Handler_Get_Room_By_FLOOR_ID(Params_Get_Room_By_FLOOR_ID i_Params_Get_Room_By_FLOOR_ID);
 public  delegate void  PostEvent_Handler_Get_Room_By_FLOOR_ID(ref List<Room>  i_Result, Params_Get_Room_By_FLOOR_ID i_Params_Get_Room_By_FLOOR_ID);
 public event PreEvent_Handler_Get_Room_By_FLOOR_ID OnPreEvent_Get_Room_By_FLOOR_ID;
 public event PostEvent_Handler_Get_Room_By_FLOOR_ID OnPostEvent_Get_Room_By_FLOOR_ID;
+public  delegate void PreEvent_Handler_Get_Hardware_link_By_OWNER_ID_Adv(Params_Get_Hardware_link_By_OWNER_ID i_Params_Get_Hardware_link_By_OWNER_ID);
+public  delegate void  PostEvent_Handler_Get_Hardware_link_By_OWNER_ID_Adv(List<Hardware_link>  i_Result, Params_Get_Hardware_link_By_OWNER_ID i_Params_Get_Hardware_link_By_OWNER_ID);
+public event PreEvent_Handler_Get_Hardware_link_By_OWNER_ID_Adv OnPreEvent_Get_Hardware_link_By_OWNER_ID_Adv;
+public event PostEvent_Handler_Get_Hardware_link_By_OWNER_ID_Adv OnPostEvent_Get_Hardware_link_By_OWNER_ID_Adv;
 #region Uploaded Files Events Handlers
 #region Register_Uploaded_Events_Handlers
 public void Register_Uploaded_Events_Handlers()

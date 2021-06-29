@@ -377,6 +377,12 @@ public List<Hardware_link> Get_Hardware_link_By_OWNER_ID_Adv(Params_Get_Hardware
 List<Hardware_link> oList = new List<Hardware_link>();
 Hardware_link oHardware_link = new Hardware_link();
 if (OnPreEvent_General != null){OnPreEvent_General("Get_Hardware_link_By_OWNER_ID_Adv");}
+#region PreEvent_Get_Hardware_link_By_OWNER_ID_Adv
+if (OnPreEvent_Get_Hardware_link_By_OWNER_ID_Adv != null)
+{
+OnPreEvent_Get_Hardware_link_By_OWNER_ID_Adv(i_Params_Get_Hardware_link_By_OWNER_ID);
+}
+#endregion
 #region Body Section.
 List<DALC.Hardware_link> oList_DBEntries = _AppContext.Get_Hardware_link_By_OWNER_ID_Adv(i_Params_Get_Hardware_link_By_OWNER_ID.OWNER_ID);
 if (oList_DBEntries != null)
@@ -389,6 +395,12 @@ oHardware_link.My_Plc = new Plc();
 oTools.CopyPropValues(oDBEntry.My_Plc, oHardware_link.My_Plc);
 oList.Add(oHardware_link);
 }
+}
+#endregion
+#region PostEvent_Get_Hardware_link_By_OWNER_ID_Adv
+if (OnPostEvent_Get_Hardware_link_By_OWNER_ID_Adv != null)
+{
+OnPostEvent_Get_Hardware_link_By_OWNER_ID_Adv(oList,i_Params_Get_Hardware_link_By_OWNER_ID);
 }
 #endregion
 if (OnPostEvent_General != null){OnPostEvent_General("Get_Hardware_link_By_OWNER_ID_Adv");}

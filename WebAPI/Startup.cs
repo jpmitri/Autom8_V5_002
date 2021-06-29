@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +14,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Serialization;
+
+using WebAPI.GetHub;
 
 namespace WebAPI
 {
@@ -28,21 +32,21 @@ namespace WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
             services.AddAuthorization();
             services.AddControllers().AddNewtonsoftJson(options =>
-            {
-
+            { 
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();
             });
             services.AddCors(options =>
             {
-                options.AddPolicy(MyAllowSpecificOrigins,
-                builder =>
-                {
-                    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-                });
+                string[] AllowedOrigins = ConfigurationManager.AppSettings["DOMAIN"].Split(",");
+                options.AddPolicy(MyAllowSpecificOrigins, builder => builder
+                .WithOrigins(AllowedOrigins)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
             });
-            // Inject an implementation of ISwaggerProvider with defaulted settings applied
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("Autom8", new OpenApiInfo { Title = "Autom8", Version = "v5" });
@@ -57,25 +61,18 @@ namespace WebAPI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-
-                // Enable middleware to serve generated Swagger as a JSON endpoint.
                 app.UseSwagger();
-                // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-                // specifying the Swagger JSON endpoint.
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/Autom8/swagger.json", "Autom8");
-                });
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/Autom8/swagger.json", "Autom8"));
             }
 
+            app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors(MyAllowSpecificOrigins);
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<OutletHub>("/RealTimeData");
             });
 
         }
