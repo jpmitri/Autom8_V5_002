@@ -269,6 +269,20 @@ namespace BLC
             {
                 switch(i_Outlet.OUTLET_TYPE_ID)
                 {
+                    case 2:
+                        {
+                            Double val = Double.Parse(i_Outlet.CURRENT_VALUE);
+                            val *= 2.55;
+                            int intval = (int)Math.Round(val);
+                            i_Outlet.CURRENT_VALUE = intval + "";
+                            Params_Twincat2Write params_Twincat2Write = new();
+                            params_Twincat2Write.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
+                            params_Twincat2Write.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
+                            params_Twincat2Write.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
+                            params_Twincat2Write.Value = i_Outlet.CURRENT_VALUE;
+                            Twincat2Write(params_Twincat2Write);
+                        }
+                        break;
                     case 3:
                         {
                             Params_Twincat2Toggle params_Twincat2Toggle = new();
