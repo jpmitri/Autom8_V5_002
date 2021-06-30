@@ -33,81 +33,6 @@ namespace MonitorPLCService
             _logger = logger;
         }
 
-        public async void defineAll()
-        {
-            outlets = new();
-            client = new();
-            user = new();
-            user.My_UserInfo = new();
-            plc = new();
-            dataStream = new();
-            topLevel = new();
-            bool loggedIn = false;
-            oTools = new();
-            if(int.TryParse(ConfigurationManager.AppSettings["DELAY"],out int x))
-            {
-                delay = x;
-            }
-            else
-            {
-                _logger.LogError("Unable To Parse Delay Using Default Delay of 500ms or 0.5s");
-            }
-            while (!loggedIn)
-            {
-                try
-                {
-                    user.My_UserInfo.UserName = ConfigurationManager.AppSettings["USERNAME"];
-                    user.My_UserInfo.Password = ConfigurationManager.AppSettings["ENCRYPTED_PASSWORD"];
-                    string serOut = JsonConvert.SerializeObject(user);
-                    HttpContent content = new StringContent(serOut, Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await client.PostAsync(ConfigurationManager.AppSettings["API"] + "Get_Service_Data", content);
-                    responseString = await response.Content.ReadAsStringAsync();
-                    topLevel = JsonConvert.DeserializeObject<TopLevel>(responseString);
-                    loggedIn = true;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "There was a problem contacting the Api");
-
-                }
-                if (!loggedIn)
-                {
-                    await Task.Delay(5000);
-                }
-            }
-            _outlets = new();
-            foreach (MyPlc plc in topLevel.MyResult.MyPlCs)
-            {
-                foreach (MyHardwareLink Hardware in plc.MyHardwareLink)
-                {
-                    foreach (MyOutlet outlet in Hardware.MyOutlet)
-                    {
-                        if(outlet.OutletTypeId is 0 or 1)
-                        {
-                            Outlet_Edit outlet_Edit = new();
-                            outlet_Edit.OUTLET_ID = outlet.OutletId;
-                            outlet_Edit.HW_link_name = Hardware.PlcAddress;
-                            outlet_Edit.CURRENT_VALUE = outlet.CurrentValue + "";
-                            outlet_Edit.PlcAddress = plc.Location;
-                            outlet_Edit.Port = (int)plc.Port;
-                            outlet_Edit.MyOutlet = new();
-                            outlet_Edit.MyOutlet.CURRENT_VALUE = outlet.CurrentValue + "";
-                            outlet_Edit.MyOutlet.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
-                            outlet_Edit.MyOutlet.OUTLET_ID = outlet.OutletId;
-                            outlet_Edit.MyOutlet.OUTLET_TYPE_ID = (int)outlet.OutletTypeId;
-                            outlet_Edit.MyOutlet.HARDWARE_LINK_ID = outlet.HardwareLinkId;
-                            outlet_Edit.MyOutlet.ROOM_ID = (int)outlet.RoomId;
-                            outlet_Edit.MyOutlet.NAME = outlet.Name;
-                            outlet_Edit.MyOutlet.ENTRY_USER_ID = topLevel.MyResult.MyUserInfo.UserId;
-                            outlet_Edit.MyOutlet.OWNER_ID = (int)topLevel.MyResult.MyUserInfo.OwnerId;
-                            _outlets.Add(outlet_Edit);
-                        }
-                        
-                    }
-                }
-            }
-        }
-
         public String Twincat2Read(Params_Twincat2Read i_Params_Twincat2Read)
         {
             try
@@ -154,7 +79,23 @@ namespace MonitorPLCService
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            defineAll();
+
+            outlets = new();
+            client = new();
+            user = new();
+            user.My_UserInfo = new();
+            plc = new();
+            dataStream = new();
+            topLevel = new();
+            oTools = new();
+            if (int.TryParse(ConfigurationManager.AppSettings["DELAY"], out int x))
+            {
+                delay = x;
+            }
+            else
+            {
+                _logger.LogError("Unable To Parse Delay Using Default Delay of 500ms or 0.5s");
+            }
             return base.StartAsync(cancellationToken);
         }
 
@@ -167,6 +108,62 @@ namespace MonitorPLCService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            bool loggedIn = false;
+
+            while (!loggedIn)
+            {
+                try
+                {
+                    user.My_UserInfo.UserName = ConfigurationManager.AppSettings["USERNAME"];
+                    user.My_UserInfo.Password = ConfigurationManager.AppSettings["ENCRYPTED_PASSWORD"];
+                    string serOut = JsonConvert.SerializeObject(user);
+                    HttpContent content = new StringContent(serOut, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync(ConfigurationManager.AppSettings["API"] + "Get_Service_Data", content);
+                    responseString = await response.Content.ReadAsStringAsync();
+                    topLevel = JsonConvert.DeserializeObject<TopLevel>(responseString);
+                    loggedIn = true;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "There was a problem contacting the Api");
+
+                }
+                if (!loggedIn)
+                {
+                    await Task.Delay(5000);
+                }
+            }
+            _outlets = new();
+            foreach (MyPlc plc in topLevel.MyResult.MyPlCs)
+            {
+                foreach (MyHardwareLink Hardware in plc.MyHardwareLink)
+                {
+                    foreach (MyOutlet outlet in Hardware.MyOutlet)
+                    {
+                        if (outlet.OutletTypeId is 0 or 1)
+                        {
+                            Outlet_Edit outlet_Edit = new();
+                            outlet_Edit.OUTLET_ID = outlet.OutletId;
+                            outlet_Edit.HW_link_name = Hardware.PlcAddress;
+                            outlet_Edit.CURRENT_VALUE = outlet.CurrentValue + "";
+                            outlet_Edit.PlcAddress = plc.Location;
+                            outlet_Edit.Port = (int)plc.Port;
+                            outlet_Edit.MyOutlet = new();
+                            outlet_Edit.MyOutlet.CURRENT_VALUE = outlet.CurrentValue + "";
+                            outlet_Edit.MyOutlet.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
+                            outlet_Edit.MyOutlet.OUTLET_ID = outlet.OutletId;
+                            outlet_Edit.MyOutlet.OUTLET_TYPE_ID = (int)outlet.OutletTypeId;
+                            outlet_Edit.MyOutlet.HARDWARE_LINK_ID = outlet.HardwareLinkId;
+                            outlet_Edit.MyOutlet.ROOM_ID = (int)outlet.RoomId;
+                            outlet_Edit.MyOutlet.NAME = outlet.Name;
+                            outlet_Edit.MyOutlet.ENTRY_USER_ID = topLevel.MyResult.MyUserInfo.UserId;
+                            outlet_Edit.MyOutlet.OWNER_ID = (int)topLevel.MyResult.MyUserInfo.OwnerId;
+                            _outlets.Add(outlet_Edit);
+                        }
+
+                    }
+                }
+            }
             while (!stoppingToken.IsCancellationRequested)
             {
                 foreach (Outlet_Edit outlet in _outlets)
