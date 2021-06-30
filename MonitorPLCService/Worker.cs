@@ -7,13 +7,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-
 using TwinCAT.Ads;
 
 namespace MonitorPLCService
@@ -35,7 +32,6 @@ namespace MonitorPLCService
         {
             _logger = logger;
         }
-
 
         public async void defineAll()
         {
@@ -66,16 +62,13 @@ namespace MonitorPLCService
                     HttpContent content = new StringContent(serOut, Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await client.PostAsync(ConfigurationManager.AppSettings["API"] + "Get_Service_Data", content);
                     responseString = await response.Content.ReadAsStringAsync();
+                    topLevel = JsonConvert.DeserializeObject<TopLevel>(responseString);
                     loggedIn = true;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "There was a problem contacting the Api");
 
-                }
-                finally
-                {
-                    topLevel = JsonConvert.DeserializeObject<TopLevel>(responseString);
                 }
                 if (!loggedIn)
                 {
@@ -115,7 +108,6 @@ namespace MonitorPLCService
             }
         }
 
-
         public String Twincat2Read(Params_Twincat2Read i_Params_Twincat2Read)
         {
             try
@@ -137,22 +129,6 @@ namespace MonitorPLCService
             }
         }
 
-
-        public override Task StartAsync(CancellationToken cancellationToken)
-        {
-            defineAll();
-            return base.StartAsync(cancellationToken);
-        }
-
-
-        public override Task StopAsync(CancellationToken cancellationToken)
-        {
-            client.Dispose();
-            _logger.LogInformation("The service has been stopped...");
-            return base.StopAsync(cancellationToken);
-        }
-
-
         public async void WriteChange(Outlet_Edit toWrite)
         {
             try
@@ -168,7 +144,6 @@ namespace MonitorPLCService
                 HttpResponseMessage response = await client.PostAsync(request, content);
                 responseString = await response.Content.ReadAsStringAsync();
                 _logger.LogInformation(toWrite.HW_link_name, toApi.CURRENT_VALUE);
-
             }
             catch (Exception ex)
             {
@@ -176,6 +151,19 @@ namespace MonitorPLCService
             }
         }
 
+
+        public override Task StartAsync(CancellationToken cancellationToken)
+        {
+            defineAll();
+            return base.StartAsync(cancellationToken);
+        }
+
+        public override Task StopAsync(CancellationToken cancellationToken)
+        {
+            client.Dispose();
+            _logger.LogInformation("The service has been stopped...");
+            return base.StopAsync(cancellationToken);
+        }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
