@@ -35,6 +35,8 @@ namespace MonitorPLCService
         {
             _logger = logger;
         }
+
+
         public async void defineAll()
         {
             outlets = new();
@@ -112,6 +114,8 @@ namespace MonitorPLCService
                 }
             }
         }
+
+
         public String Twincat2Read(Params_Twincat2Read i_Params_Twincat2Read)
         {
             try
@@ -132,11 +136,14 @@ namespace MonitorPLCService
                 return null;
             }
         }
+
+
         public override Task StartAsync(CancellationToken cancellationToken)
         {
             defineAll();
             return base.StartAsync(cancellationToken);
         }
+
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
@@ -144,6 +151,7 @@ namespace MonitorPLCService
             _logger.LogInformation("The service has been stopped...");
             return base.StopAsync(cancellationToken);
         }
+
 
         public async void WriteChange(Outlet_Edit toWrite)
         {
@@ -167,6 +175,8 @@ namespace MonitorPLCService
                 _logger.LogError(ex, "There was a problem contacting the Api");
             }
         }
+
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
@@ -187,6 +197,7 @@ namespace MonitorPLCService
             }
         }
     }
+
 
     #region Params
     public partial class Outlet_Edit
