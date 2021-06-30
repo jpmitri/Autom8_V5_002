@@ -87,23 +87,27 @@ namespace MonitorPLCService
                 {
                     foreach (MyOutlet outlet in Hardware.MyOutlet)
                     {
-                        Outlet_Edit outlet_Edit = new();
-                        outlet_Edit.OUTLET_ID = outlet.OutletId;
-                        outlet_Edit.HW_link_name = Hardware.PlcAddress;
-                        outlet_Edit.CURRENT_VALUE = outlet.CurrentValue + "";
-                        outlet_Edit.PlcAddress = plc.Location;
-                        outlet_Edit.Port = (int)plc.Port;
-                        outlet_Edit.MyOutlet = new();
-                        outlet_Edit.MyOutlet.CURRENT_VALUE = outlet.CurrentValue + "";
-                        outlet_Edit.MyOutlet.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
-                        outlet_Edit.MyOutlet.OUTLET_ID = outlet.OutletId;
-                        outlet_Edit.MyOutlet.OUTLET_TYPE_ID = (int)outlet.OutletTypeId;
-                        outlet_Edit.MyOutlet.HARDWARE_LINK_ID = outlet.HardwareLinkId;
-                        outlet_Edit.MyOutlet.ROOM_ID = (int)outlet.RoomId;
-                        outlet_Edit.MyOutlet.NAME = outlet.Name;
-                        outlet_Edit.MyOutlet.ENTRY_USER_ID = topLevel.MyResult.MyUserInfo.UserId;
-                        outlet_Edit.MyOutlet.OWNER_ID = (int)topLevel.MyResult.MyUserInfo.OwnerId;
-                        _outlets.Add(outlet_Edit);
+                        if(outlet.OutletTypeId is 0 or 1)
+                        {
+                            Outlet_Edit outlet_Edit = new();
+                            outlet_Edit.OUTLET_ID = outlet.OutletId;
+                            outlet_Edit.HW_link_name = Hardware.PlcAddress;
+                            outlet_Edit.CURRENT_VALUE = outlet.CurrentValue + "";
+                            outlet_Edit.PlcAddress = plc.Location;
+                            outlet_Edit.Port = (int)plc.Port;
+                            outlet_Edit.MyOutlet = new();
+                            outlet_Edit.MyOutlet.CURRENT_VALUE = outlet.CurrentValue + "";
+                            outlet_Edit.MyOutlet.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
+                            outlet_Edit.MyOutlet.OUTLET_ID = outlet.OutletId;
+                            outlet_Edit.MyOutlet.OUTLET_TYPE_ID = (int)outlet.OutletTypeId;
+                            outlet_Edit.MyOutlet.HARDWARE_LINK_ID = outlet.HardwareLinkId;
+                            outlet_Edit.MyOutlet.ROOM_ID = (int)outlet.RoomId;
+                            outlet_Edit.MyOutlet.NAME = outlet.Name;
+                            outlet_Edit.MyOutlet.ENTRY_USER_ID = topLevel.MyResult.MyUserInfo.UserId;
+                            outlet_Edit.MyOutlet.OWNER_ID = (int)topLevel.MyResult.MyUserInfo.OwnerId;
+                            _outlets.Add(outlet_Edit);
+                        }
+                        
                     }
                 }
             }
