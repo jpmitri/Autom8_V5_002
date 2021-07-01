@@ -7,10 +7,13 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+
 using TwinCAT.Ads;
 
 namespace MonitorPLCService
@@ -33,7 +36,7 @@ namespace MonitorPLCService
             _logger = logger;
         }
 
-        public String Twincat2Read(Params_Twincat2Read i_Params_Twincat2Read)
+        public string Twincat2Read(Params_Twincat2Read i_Params_Twincat2Read)
         {
             try
             {
@@ -43,7 +46,6 @@ namespace MonitorPLCService
                     tcAdsClient.Connect(amsNetId, int.Parse(i_Params_Twincat2Read.Port));
                     int varibalehande = tcAdsClient.CreateVariableHandle(i_Params_Twincat2Read.VariableName);
                     string res = tcAdsClient.ReadAny(varibalehande, varibalehande.GetType()).ToString(); ;
-                    tcAdsClient.Dispose();
                     return res;
                 }
             }
@@ -68,7 +70,7 @@ namespace MonitorPLCService
 
                 HttpResponseMessage response = await client.PostAsync(request, content);
                 responseString = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation(toWrite.HW_link_name, toApi.CURRENT_VALUE);
+                _logger.LogInformation(toWrite.HW_link_name + " {0}", toApi.CURRENT_VALUE);
             }
             catch (Exception ex)
             {
@@ -158,6 +160,12 @@ namespace MonitorPLCService
                             outlet_Edit.MyOutlet.NAME = outlet.Name;
                             outlet_Edit.MyOutlet.ENTRY_USER_ID = topLevel.MyResult.MyUserInfo.UserId;
                             outlet_Edit.MyOutlet.OWNER_ID = (int)topLevel.MyResult.MyUserInfo.OwnerId;
+                            outlet_Edit.MyOutlet.My_Hardware_link = new();
+                            outlet_Edit.MyOutlet.My_Hardware_link.PLC_ADDRESS = Hardware.PlcAddress;
+                            outlet_Edit.MyOutlet.My_Hardware_link.My_Plc = new();
+                            outlet_Edit.MyOutlet.My_Hardware_link.My_Plc.LOCATION = plc.Location;
+                            outlet_Edit.MyOutlet.My_Hardware_link.My_Plc.PORT = plc.Port+"";
+
                             _outlets.Add(outlet_Edit);
                         }
 
@@ -172,13 +180,20 @@ namespace MonitorPLCService
                     params_Twincat2Read.AMSID = outlet.PlcAddress;
                     params_Twincat2Read.Port = outlet.Port + "";
                     params_Twincat2Read.VariableName = outlet.HW_link_name;
-                    outlet.MyOutlet.CURRENT_VALUE = Twincat2Read(params_Twincat2Read);
+                    Task t = Task.Factory.StartNew(
+                () =>
+                             {
+                                 outlet.MyOutlet.CURRENT_VALUE = Twincat2Read(params_Twincat2Read);
+                             }
+                       );
+                    await t;
                     if (outlet.MyOutlet.CURRENT_VALUE != outlet.CURRENT_VALUE)
                     {
+                        outlet.CURRENT_VALUE = outlet.MyOutlet.CURRENT_VALUE;
                         WriteChange(outlet);
                     }
                 }
-                await Task.Delay(500, stoppingToken);
+                await Task.Delay(delay, stoppingToken);
             }
         }
     }
@@ -206,7 +221,8 @@ namespace MonitorPLCService
         public long? ENTRY_USER_ID { get; set; }
         public string ENTRY_DATE { get; set; }
         public Int32? OWNER_ID { get; set; }
-        public string HW_link_name { get; set; }
+        public Hardware_link My_Hardware_link { get; set; }
+
     }
     public partial class Hardware_link
     {
@@ -216,6 +232,7 @@ namespace MonitorPLCService
         public long? ENTRY_USER_ID { get; set; }
         public string ENTRY_DATE { get; set; }
         public Int32? OWNER_ID { get; set; }
+        public Plc My_Plc { get; set; }
         public List<Outlet> MyProperty { get; set; }
 
     }

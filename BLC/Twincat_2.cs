@@ -10,6 +10,7 @@ namespace BLC
         {
             try
             {
+                System.Threading.Thread.Sleep(50);
                 using (TcAdsClient tcAdsClient = new())
                 {
                     AmsNetId amsNetId = new(i_Params_Twincat2Write.AMSID);
@@ -38,6 +39,7 @@ namespace BLC
         }
         public async Task<String> Twincat2Toggle(Params_Twincat2Toggle i_Params_Twincat2Toggle)
         {
+            System.Threading.Thread.Sleep(50);
             try
             {
                 using (TcAdsClient tcAdsClient = new())

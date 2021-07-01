@@ -63,7 +63,7 @@ public partial class DataController
             {
                 oBLC.Edit_Outlet(i_Outlet);
                 oResult_Edit_Outlet.My_Outlet = i_Outlet;
-                if (i_Outlet.OUTLET_TYPE_ID is 0 or 1)
+                if (i_Outlet.OUTLET_TYPE_ID is 1 or 2)
                 {
                     if (i_Outlet.OUTLET_ID != -1 && i_Outlet.CURRENT_VALUE != "-1")
                     {

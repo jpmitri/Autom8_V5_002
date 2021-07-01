@@ -274,6 +274,14 @@ namespace BLC
                             Double val = Double.Parse(i_Outlet.CURRENT_VALUE);
                             val *= 2.55;
                             int intval = (int)Math.Round(val);
+                            if(intval > 255)
+                            {
+                                intval = 255;
+                            }
+                            if(intval<0)
+                            {
+                                intval = 0;
+                            }
                             i_Outlet.CURRENT_VALUE = intval + "";
                             Params_Twincat2Write params_Twincat2Write = new();
                             params_Twincat2Write.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
