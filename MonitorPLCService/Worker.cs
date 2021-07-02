@@ -56,25 +56,42 @@ namespace MonitorPLCService
             }
         }
 
-        public async void WriteChange(Outlet_Edit toWrite)
+        public async void WriteChange(object sender,AdsNotificationEventArgs e)
         {
             try
             {
+                Outlet_Edit toWrite = new();
+                toWrite=_outlets.Where(x => x.PLCMonitor==e.NotificationHandle).First();
                 Outlet toApi = new();
-                toApi = toWrite.MyOutlet;
+                toApi=toWrite.MyOutlet;
+                Params_Twincat2Read params_Twincat2Read = new();
+                params_Twincat2Read.AMSID=toWrite.PlcAddress;
+                params_Twincat2Read.Port=toWrite.Port+"";
+                params_Twincat2Read.VariableName=toWrite.HW_link_name;
+                toApi.CURRENT_VALUE=null;
+                while(toApi.CURRENT_VALUE is null)
+                {
+                    toApi.CURRENT_VALUE=Twincat2Read(params_Twincat2Read);
+                    if(toApi.CURRENT_VALUE is null)
+                    {
+                        await Task.Delay(5000);
+                    }
+                }
                 string serOut = JsonConvert.SerializeObject(toApi);
-                HttpContent content = new StringContent(serOut, Encoding.UTF8, "application/json");
+                HttpContent content = new StringContent(serOut,Encoding.UTF8,"application/json");
                 string request = ConfigurationManager.AppSettings["API"];
-                request += "Edit_Outlet?ticket=";
-                request += topLevel.MyResult.MyUserInfo.Ticket;
+                request+="Edit_Outlet?ticket=";
+                request+=topLevel.MyResult.MyUserInfo.Ticket;
 
-                HttpResponseMessage response = await client.PostAsync(request, content);
-                responseString = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation(toWrite.HW_link_name + " {0}", toApi.CURRENT_VALUE);
+                HttpResponseMessage response = await client.PostAsync(request,content);
+                responseString=await response.Content.ReadAsStringAsync();
+                _logger.LogInformation(
+                e.NotificationHandle,toWrite.HW_link_name);
+
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                _logger.LogError(ex, "There was a problem contacting the Api");
+                _logger.LogError(ex,"There was a problem contacting the Api");
             }
         }
 
@@ -136,64 +153,45 @@ namespace MonitorPLCService
                 }
             }
             _outlets = new();
-            foreach (MyPlc plc in topLevel.MyResult.MyPlCs)
+            using(TcAdsClient tcAdsClient = new())
             {
-                foreach (MyHardwareLink Hardware in plc.MyHardwareLink)
+                foreach(MyPlc plc in topLevel.MyResult.MyPlCs)
                 {
-                    foreach (MyOutlet outlet in Hardware.MyOutlet)
+                    foreach(MyHardwareLink Hardware in plc.MyHardwareLink)
                     {
-                        if (outlet.OutletTypeId is 0 or 1)
+                        foreach(MyOutlet outlet in Hardware.MyOutlet)
                         {
-                            Outlet_Edit outlet_Edit = new();
-                            outlet_Edit.OUTLET_ID = outlet.OutletId;
-                            outlet_Edit.HW_link_name = Hardware.PlcAddress;
-                            outlet_Edit.CURRENT_VALUE = outlet.CurrentValue + "";
-                            outlet_Edit.PlcAddress = plc.Location;
-                            outlet_Edit.Port = (int)plc.Port;
-                            outlet_Edit.MyOutlet = new();
-                            outlet_Edit.MyOutlet.CURRENT_VALUE = outlet.CurrentValue + "";
-                            outlet_Edit.MyOutlet.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
-                            outlet_Edit.MyOutlet.OUTLET_ID = outlet.OutletId;
-                            outlet_Edit.MyOutlet.OUTLET_TYPE_ID = (int)outlet.OutletTypeId;
-                            outlet_Edit.MyOutlet.HARDWARE_LINK_ID = outlet.HardwareLinkId;
-                            outlet_Edit.MyOutlet.ROOM_ID = (int)outlet.RoomId;
-                            outlet_Edit.MyOutlet.NAME = outlet.Name;
-                            outlet_Edit.MyOutlet.ENTRY_USER_ID = topLevel.MyResult.MyUserInfo.UserId;
-                            outlet_Edit.MyOutlet.OWNER_ID = (int)topLevel.MyResult.MyUserInfo.OwnerId;
-                            outlet_Edit.MyOutlet.My_Hardware_link = new();
-                            outlet_Edit.MyOutlet.My_Hardware_link.PLC_ADDRESS = Hardware.PlcAddress;
-                            outlet_Edit.MyOutlet.My_Hardware_link.My_Plc = new();
-                            outlet_Edit.MyOutlet.My_Hardware_link.My_Plc.LOCATION = plc.Location;
-                            outlet_Edit.MyOutlet.My_Hardware_link.My_Plc.PORT = plc.Port+"";
+                            if(outlet.OutletTypeId is 1 or 2)
+                            {
+                                Outlet_Edit outlet_Edit = new();
+                                outlet_Edit.OUTLET_ID=outlet.OutletId;
+                                outlet_Edit.HW_link_name=Hardware.PlcAddress;
+                                outlet_Edit.CURRENT_VALUE=outlet.CurrentValue+"";
+                                outlet_Edit.PlcAddress=plc.Location;
+                                outlet_Edit.Port=(int)plc.Port;
+                                outlet_Edit.MyOutlet=new();
+                                outlet_Edit.MyOutlet.CURRENT_VALUE=outlet.CurrentValue+"";
+                                outlet_Edit.MyOutlet.ENTRY_DATE=oTools.GetDateString(DateTime.Today);
+                                outlet_Edit.MyOutlet.OUTLET_ID=outlet.OutletId;
+                                outlet_Edit.MyOutlet.OUTLET_TYPE_ID=(int)outlet.OutletTypeId;
+                                outlet_Edit.MyOutlet.HARDWARE_LINK_ID=outlet.HardwareLinkId;
+                                outlet_Edit.MyOutlet.ROOM_ID=(int)outlet.RoomId;
+                                outlet_Edit.MyOutlet.NAME=outlet.Name;
+                                outlet_Edit.MyOutlet.ENTRY_USER_ID=topLevel.MyResult.MyUserInfo.UserId;
+                                outlet_Edit.MyOutlet.OWNER_ID=(int)topLevel.MyResult.MyUserInfo.OwnerId;
+                                outlet_Edit.MyOutlet.My_Hardware_link=new();
+                                outlet_Edit.MyOutlet.My_Hardware_link.PLC_ADDRESS=Hardware.PlcAddress;
+                                outlet_Edit.MyOutlet.My_Hardware_link.My_Plc=new();
+                                outlet_Edit.MyOutlet.My_Hardware_link.My_Plc.LOCATION=plc.Location;
+                                outlet_Edit.MyOutlet.My_Hardware_link.My_Plc.PORT=plc.Port+"";
+                                outlet_Edit.PLCMonitor=tcAdsClient.AddDeviceNotification(Hardware.PlcAddress,dataStream,0,1,AdsTransMode.OnChange,100,0,"");
+                                _outlets.Add(outlet_Edit);
+                            }
 
-                            _outlets.Add(outlet_Edit);
                         }
-
                     }
                 }
-            }
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                foreach (Outlet_Edit outlet in _outlets)
-                {
-                    Params_Twincat2Read params_Twincat2Read = new();
-                    params_Twincat2Read.AMSID = outlet.PlcAddress;
-                    params_Twincat2Read.Port = outlet.Port + "";
-                    params_Twincat2Read.VariableName = outlet.HW_link_name;
-                    Task t = Task.Factory.StartNew(
-                () =>
-                             {
-                                 outlet.MyOutlet.CURRENT_VALUE = Twincat2Read(params_Twincat2Read);
-                             }
-                       );
-                    await t;
-                    if (outlet.MyOutlet.CURRENT_VALUE != outlet.CURRENT_VALUE)
-                    {
-                        outlet.CURRENT_VALUE = outlet.MyOutlet.CURRENT_VALUE;
-                        WriteChange(outlet);
-                    }
-                }
-                await Task.Delay(delay, stoppingToken);
+                tcAdsClient.AdsNotification+=new(WriteChange);
             }
         }
     }

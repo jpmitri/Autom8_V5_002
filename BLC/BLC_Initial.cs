@@ -283,6 +283,7 @@ namespace BLC
                                 intval = 0;
                             }
                             i_Outlet.CURRENT_VALUE = intval + "";
+                            intval = 0;
                             Params_Twincat2Write params_Twincat2Write = new();
                             params_Twincat2Write.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
                             params_Twincat2Write.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
