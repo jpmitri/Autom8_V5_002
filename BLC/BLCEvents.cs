@@ -43,7 +43,8 @@ Delete_Outlet_type,
 Delete_Floor,
 Delete_Room,
 Delete_Outlet_ui,
-Get_Service_Data
+Get_Service_Data,
+MonitorPLC
 }
 #endregion
 
