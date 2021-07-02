@@ -299,7 +299,25 @@ namespace BLC
                             params_Twincat2Toggle.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
                             params_Twincat2Toggle.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
                             var oQuery = _AppContext.UP_GET_SETUP_ENTRY(1, "_TIMER", "001");
-                            Twincat2Write(params_Twincat2Write);
+                            if (oQuery.Count == 1)
+                            {
+                                var oResult = oQuery.First();
+                                int parseRes;
+                                bool isParsed = int.TryParse(oResult.CODE_VALUE_EN, out parseRes);
+                                if (isParsed)
+                                {
+                                    params_Twincat2Toggle.Delay = parseRes;
+                                }
+                                else
+                                {
+                                    params_Twincat2Toggle.Delay = 40000;
+                                }
+                            }
+                            else
+                            {
+                                params_Twincat2Toggle.Delay = 40000;
+                            }
+                            _ = Twincat2Toggle(params_Twincat2Toggle);
                         }
                         break;
                     case 4:

@@ -99,22 +99,7 @@ namespace MonitorPLCService
         public override Task StartAsync(CancellationToken cancellationToken)
         {
 
-            outlets = new();
-            client = new();
-            user = new();
-            user.My_UserInfo = new();
-            plc = new();
-            dataStream = new();
-            topLevel = new();
-            oTools = new();
-            if (int.TryParse(ConfigurationManager.AppSettings["DELAY"], out int x))
-            {
-                delay = x;
-            }
-            else
-            {
-                _logger.LogError("Unable To Parse Delay Using Default Delay of 500ms or 0.5s");
-            }
+            
             return base.StartAsync(cancellationToken);
         }
 
@@ -127,6 +112,22 @@ namespace MonitorPLCService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            outlets=new();
+            client=new();
+            user=new();
+            user.My_UserInfo=new();
+            plc=new();
+            dataStream=new();
+            topLevel=new();
+            oTools=new();
+            if(int.TryParse(ConfigurationManager.AppSettings["DELAY"],out int x))
+            {
+                delay=x;
+            }
+            else
+            {
+                _logger.LogError("Unable To Parse Delay Using Default Delay of 500ms or 0.5s");
+            }
             bool loggedIn = false;
 
             while (!loggedIn)
@@ -153,8 +154,7 @@ namespace MonitorPLCService
                 }
             }
             _outlets = new();
-            using(TcAdsClient tcAdsClient = new())
-            {
+           
                 foreach(MyPlc plc in topLevel.MyResult.MyPlCs)
                 {
                     foreach(MyHardwareLink Hardware in plc.MyHardwareLink)
@@ -184,12 +184,17 @@ namespace MonitorPLCService
                                 outlet_Edit.MyOutlet.My_Hardware_link.My_Plc=new();
                                 outlet_Edit.MyOutlet.My_Hardware_link.My_Plc.LOCATION=plc.Location;
                                 outlet_Edit.MyOutlet.My_Hardware_link.My_Plc.PORT=plc.Port+"";
-                                outlet_Edit.PLCMonitor=tcAdsClient.AddDeviceNotification(Hardware.PlcAddress,dataStream,0,1,AdsTransMode.OnChange,100,0,"");
                                 _outlets.Add(outlet_Edit);
                             }
 
                         }
                     }
+                }
+                 using(TcAdsClient tcAdsClient = new())
+            {
+            foreach(Outlet_Edit outlet_Edit in _outlets)
+                {
+                    outlet_Edit.PLCMonitor=tcAdsClient.AddDeviceNotification(outlet_Edit.MyOutlet.My_Hardware_link.PLC_ADDRESS,dataStream,0,1,AdsTransMode.OnChange,100,0,"");
                 }
                 tcAdsClient.AdsNotification+=new(WriteChange);
             }
