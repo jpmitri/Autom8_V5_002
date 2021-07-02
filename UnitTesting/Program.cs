@@ -145,6 +145,16 @@ namespace UnitTesting
                             outlet_Type3.MAX_VALUE = 1;
                             outlet_Type3.NAME = "Door Outlet TwinCat 2";
                             params_Edit_Outlet_Type_List.My_List_To_Edit.Add(outlet_Type3);
+                            Outlet_type outlet_Type4 = new();
+                            outlet_Type4.OUTLET_TYPE_ID=-1;
+                            outlet_Type4.ENTRY_DATE=oTools.GetDateString(DateTime.Today);
+                            outlet_Type4.ENTRY_USER_ID=1;
+                            outlet_Type4.OWNER_ID=1;
+                            outlet_Type4.IS_DIGITAL=true;
+                            outlet_Type4.MIN_VALUE=0;
+                            outlet_Type4.MAX_VALUE=255;
+                            outlet_Type4.NAME="TwinCat 2 Input";
+                            params_Edit_Outlet_Type_List.My_List_To_Edit.Add(outlet_Type4);
                             oBLC.Edit_Outlet_type_List(params_Edit_Outlet_Type_List);
                         }
                         break;

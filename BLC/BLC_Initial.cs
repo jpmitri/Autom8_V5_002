@@ -269,6 +269,29 @@ namespace BLC
             {
                 switch(i_Outlet.OUTLET_TYPE_ID)
                 {
+                    case 2:
+                        {
+                            Double val = Double.Parse(i_Outlet.CURRENT_VALUE);
+                            val *= 2.55;
+                            int intval = (int)Math.Round(val);
+                            if(intval > 255)
+                            {
+                                intval = 255;
+                            }
+                            if(intval<0)
+                            {
+                                intval = 0;
+                            }
+                            i_Outlet.CURRENT_VALUE = intval + "";
+                            intval = 0;
+                            Params_Twincat2Write params_Twincat2Write = new();
+                            params_Twincat2Write.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
+                            params_Twincat2Write.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
+                            params_Twincat2Write.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
+                            params_Twincat2Write.Value = i_Outlet.CURRENT_VALUE;
+                            Twincat2Write(params_Twincat2Write);
+                        }
+                        break;
                     case 3:
                         {
                             Params_Twincat2Toggle params_Twincat2Toggle = new();
@@ -324,6 +347,16 @@ namespace BLC
                                 params_Twincat2Toggle.Delay = 1000;
                             }
                             _ = Twincat2Toggle(params_Twincat2Toggle);
+                        }
+                        break;
+                    case 5:
+                        {
+                            Params_Twincat2Write params_Twincat2Write = new();
+                            params_Twincat2Write.AMSID=i_Outlet.My_Hardware_link.My_Plc.LOCATION;
+                            params_Twincat2Write.Port=i_Outlet.My_Hardware_link.My_Plc.PORT;
+                            params_Twincat2Write.VariableName=i_Outlet.My_Hardware_link.PLC_ADDRESS.Replace("_in_","_out_");
+                            params_Twincat2Write.Value=i_Outlet.CURRENT_VALUE;
+                            Twincat2Write(params_Twincat2Write);
                         }
                         break;
                     default:
