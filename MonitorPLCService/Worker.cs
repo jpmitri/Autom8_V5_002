@@ -161,7 +161,7 @@ namespace MonitorPLCService
                     {
                         foreach(MyOutlet outlet in Hardware.MyOutlet)
                         {
-                            if(outlet.OutletTypeId is 1 or 2)
+                            if(outlet.OutletTypeId is 5)
                             {
                                 Outlet_Edit outlet_Edit = new();
                                 outlet_Edit.OUTLET_ID=outlet.OutletId;
