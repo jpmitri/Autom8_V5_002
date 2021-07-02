@@ -250,6 +250,7 @@ namespace CodeGenerator
             #endregion
             #region Service
             oCodeBooster.APIMethodsSelection.Add("Get_Service_Data");
+            oCodeBooster.APIMethodsSelection.Add("MonitorPLC");
             #endregion
             #endregion
             #region Advanced Options
