@@ -267,108 +267,101 @@ namespace BLC
         {
             if(i_Outlet.OUTLET_ID!=-1 && i_Outlet.CURRENT_VALUE!="-1")
             {
-                switch(i_Outlet.OUTLET_TYPE_ID)
+                if(i_Outlet.My_Hardware_link.My_Plc is not null)
                 {
-                    case 2:
-                        {
-                            Double val = Double.Parse(i_Outlet.CURRENT_VALUE);
-                            val *= 2.55;
-                            int intval = (int)Math.Round(val);
-                            if(intval > 255)
+                    switch(i_Outlet.OUTLET_TYPE_ID)
+                    {
+                        case 2:
                             {
-                                intval = 255;
-                            }
-                            if(intval<0)
-                            {
-                                intval = 0;
-                            }
-                            i_Outlet.CURRENT_VALUE = intval + "";
-                            intval = 0;
-                            Params_Twincat2Write params_Twincat2Write = new();
-                            params_Twincat2Write.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
-                            params_Twincat2Write.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
-                            params_Twincat2Write.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
-                            params_Twincat2Write.Value = i_Outlet.CURRENT_VALUE;
-                            Twincat2Write(params_Twincat2Write);
-                        }
-                        break;
-                    case 3:
-                        {
-                            Params_Twincat2Toggle params_Twincat2Toggle = new();
-                            params_Twincat2Toggle.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
-                            params_Twincat2Toggle.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
-                            params_Twincat2Toggle.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
-                            var oQuery = _AppContext.UP_GET_SETUP_ENTRY(1, "_TIMER", "001");
-                            if (oQuery.Count == 1)
-                            {
-                                var oResult = oQuery.First();
-                                int parseRes;
-                                bool isParsed = int.TryParse(oResult.CODE_VALUE_EN, out parseRes);
-                                if (isParsed)
+                                Double val = Double.Parse(i_Outlet.CURRENT_VALUE);
+                                val *= 2.55;
+                                int intval = (int)Math.Round(val);
+                                if(intval > 255)
                                 {
-                                    params_Twincat2Toggle.Delay = parseRes;
+                                    intval = 255;
+                                }
+                                if(intval < 0)
+                                {
+                                    intval = 0;
+                                }
+                                i_Outlet.CURRENT_VALUE = intval + "";
+                                intval = 0;
+                                Params_Twincat2Write params_Twincat2Write = new();
+                                params_Twincat2Write.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
+                                params_Twincat2Write.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
+                                params_Twincat2Write.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
+                                params_Twincat2Write.Value = i_Outlet.CURRENT_VALUE;
+                                Twincat2Write(params_Twincat2Write);
+                            }
+                            break;
+                        case 3:
+                            {
+                                Params_Twincat2Toggle params_Twincat2Toggle = new();
+                                params_Twincat2Toggle.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
+                                params_Twincat2Toggle.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
+                                params_Twincat2Toggle.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
+                                var oQuery = _AppContext.UP_GET_SETUP_ENTRY(1,"_TIMER","001");
+                                if(oQuery.Count == 1)
+                                {
+                                    var oResult = oQuery.First();
+                                    int parseRes;
+                                    bool isParsed = int.TryParse(oResult.CODE_VALUE_EN,out parseRes);
+                                    if(isParsed)
+                                    {
+                                        params_Twincat2Toggle.Delay = parseRes;
+                                    }
+                                    else
+                                    {
+                                        params_Twincat2Toggle.Delay = 40000;
+                                    }
                                 }
                                 else
                                 {
                                     params_Twincat2Toggle.Delay = 40000;
                                 }
+                                _ = Twincat2Toggle(params_Twincat2Toggle);
                             }
-                            else
+                            break;
+                        case 4:
                             {
-                                params_Twincat2Toggle.Delay = 40000;
-                            }
-                            _ = Twincat2Toggle(params_Twincat2Toggle);
-                        }
-                        break;
-                    case 4:
-                        {
-                            Params_Twincat2Toggle params_Twincat2Toggle = new();
-                            params_Twincat2Toggle.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
-                            params_Twincat2Toggle.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
-                            params_Twincat2Toggle.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
-                            var oQuery = _AppContext.UP_GET_SETUP_ENTRY(1, "_TIMER", "002");
-                            if (oQuery.Count == 1)
-                            {
-                                var oResult = oQuery.First();
-                                int parseRes;
-                                bool isParsed =int.TryParse(oResult.CODE_VALUE_EN, out parseRes);
-                                if(isParsed)
+                                Params_Twincat2Toggle params_Twincat2Toggle = new();
+                                params_Twincat2Toggle.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
+                                params_Twincat2Toggle.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
+                                params_Twincat2Toggle.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
+                                var oQuery = _AppContext.UP_GET_SETUP_ENTRY(1,"_TIMER","002");
+                                if(oQuery.Count == 1)
                                 {
-                                    params_Twincat2Toggle.Delay = parseRes;
+                                    var oResult = oQuery.First();
+                                    int parseRes;
+                                    bool isParsed = int.TryParse(oResult.CODE_VALUE_EN,out parseRes);
+                                    if(isParsed)
+                                    {
+                                        params_Twincat2Toggle.Delay = parseRes;
+                                    }
+                                    else
+                                    {
+                                        params_Twincat2Toggle.Delay = 1000;
+                                    }
+
                                 }
                                 else
                                 {
                                     params_Twincat2Toggle.Delay = 1000;
                                 }
-                                
+                                _ = Twincat2Toggle(params_Twincat2Toggle);
                             }
-                            else
+                            break;
+                        default:
                             {
-                                params_Twincat2Toggle.Delay = 1000;
+                                Params_Twincat2Write params_Twincat2Write = new();
+                                params_Twincat2Write.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
+                                params_Twincat2Write.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
+                                params_Twincat2Write.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
+                                params_Twincat2Write.Value = i_Outlet.CURRENT_VALUE;
+                                Twincat2Write(params_Twincat2Write);
                             }
-                            _ = Twincat2Toggle(params_Twincat2Toggle);
-                        }
-                        break;
-                    case 5:
-                        {
-                            Params_Twincat2Write params_Twincat2Write = new();
-                            params_Twincat2Write.AMSID=i_Outlet.My_Hardware_link.My_Plc.LOCATION;
-                            params_Twincat2Write.Port=i_Outlet.My_Hardware_link.My_Plc.PORT;
-                            params_Twincat2Write.VariableName=i_Outlet.My_Hardware_link.PLC_ADDRESS.Replace("_in_","_out_");
-                            params_Twincat2Write.Value=i_Outlet.CURRENT_VALUE;
-                            Twincat2Write(params_Twincat2Write);
-                        }
-                        break;
-                    default:
-                        {
-                            Params_Twincat2Write params_Twincat2Write = new();
-                            params_Twincat2Write.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
-                            params_Twincat2Write.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
-                            params_Twincat2Write.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
-                            params_Twincat2Write.Value = i_Outlet.CURRENT_VALUE;
-                            Twincat2Write(params_Twincat2Write);
-                        }
-                        break;
+                            break;
+                    }
                 }
             }
         }

@@ -157,6 +157,53 @@ public partial class DataController
         #endregion
     }
     #endregion
+    #region Keep Alive
+    [HttpPost]
+    [Route("KeepAlive")]
+    public bool KeepAlive()
+    {
+        string i_Ticket = string.Empty;
+        try
+        {
+            // Ticket Checking
+            //-------------------
+            if(ConfigurationManager.AppSettings["ENABLE_TICKET"] != null)
+            {
+                if(ConfigurationManager.AppSettings["ENABLE_TICKET"] == "1")
+                {
+                    if
+                    (
+                    (HttpContext.Request.Query["Ticket"].FirstOrDefault() != null) &&
+                    (HttpContext.Request.Query["Ticket"].ToString() != "")
+                    )
+                    {
+                        i_Ticket = HttpContext.Request.Query["Ticket"].ToString();
+                        BLC.BLC oBLC = new();
+                        var x = oBLC.ResolveTicket(i_Ticket);
+                        if(x.TryGetValue("OWNER_ID",out string y))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            throw new Exception("Invalid Ticket");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Invalid Ticket");
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            
+        }
+        return false;
+    }
+    #endregion
 }
 #region Result_Edit_Outlet
 public partial class Result_Edit_Outlet: Action_Result
