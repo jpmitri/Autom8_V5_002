@@ -351,16 +351,6 @@ namespace BLC
                                 _ = Twincat2Toggle(params_Twincat2Toggle);
                             }
                             break;
-                        case 5:
-                            {
-                                Params_Twincat2Write params_Twincat2Write = new();
-                                params_Twincat2Write.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
-                                params_Twincat2Write.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
-                                params_Twincat2Write.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS.Replace("_in_","_out_");
-                                params_Twincat2Write.Value = i_Outlet.CURRENT_VALUE;
-                                Twincat2Write(params_Twincat2Write);
-                            }
-                            break;
                         default:
                             {
                                 Params_Twincat2Write params_Twincat2Write = new();
