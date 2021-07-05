@@ -56,16 +56,19 @@ namespace WebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app,IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if(env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/Autom8/swagger.json", "Autom8"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/Autom8/swagger.json","Autom8"));
             }
 
-            app.UseHttpsRedirection();
+            if(ConfigurationManager.AppSettings["IS_HTTPS"] == "https")
+            {
+                app.UseHttpsRedirection();
+            }
             app.UseRouting();
             app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthorization();
