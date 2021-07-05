@@ -412,8 +412,8 @@ namespace BLC
             }
             catch(Exception e)
             {
-
-                throw;
+                Console.WriteLine(e);
+                throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_9999));
             }
             return result;
         }
