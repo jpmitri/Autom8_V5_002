@@ -33,7 +33,6 @@ namespace MonitorPLCService
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            client = new();
             user = new();
             user.My_UserInfo = new();
             resultGetData = new();
@@ -58,40 +57,46 @@ namespace MonitorPLCService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            bool loggedIn = false;
-            while(!loggedIn)
+            using(client = new())
             {
-                try
+                bool loggedIn = false;
+                while(!loggedIn)
                 {
-                    user.My_UserInfo.UserName = ConfigurationManager.AppSettings["USERNAME"];
-                    user.My_UserInfo.Password = ConfigurationManager.AppSettings["ENCRYPTED_PASSWORD"];
-                    string serOut = JsonConvert.SerializeObject(user);
-                    HttpContent content = new StringContent(serOut,Encoding.UTF8,"application/json");
-                    HttpResponseMessage response = await client.PostAsync(ConfigurationManager.AppSettings["API"] + "Get_Service_Data",content);
-                    responseString = await response.Content.ReadAsStringAsync();
-                    resultGetData = JsonConvert.DeserializeObject<User>(responseString);
-                    loggedIn = true;
-                }
-                catch(Exception ex)
-                {
-                    _logger.LogError(ex,"There was a problem contacting the Api");
+                    try
+                    {
+                        user.My_UserInfo.UserName = ConfigurationManager.AppSettings["USERNAME"];
+                        user.My_UserInfo.Password = ConfigurationManager.AppSettings["ENCRYPTED_PASSWORD"];
+                        string serOut = JsonConvert.SerializeObject(user);
+                        HttpContent content = new StringContent(serOut,Encoding.UTF8,"application/json");
+                        HttpResponseMessage response = await client.PostAsync(ConfigurationManager.AppSettings["API"] + "Get_Service_Data",content);
+                        responseString = await response.Content.ReadAsStringAsync();
+                        resultGetData = JsonConvert.DeserializeObject<User>(responseString);
+                        loggedIn = true;
+                    }
+                    catch(Exception ex)
+                    {
+                        _logger.LogError(ex,"There was a problem contacting the Api");
 
-                }
-                if(!loggedIn)
-                {
-                    await Task.Delay(5000);
+                    }
+                    if(!loggedIn)
+                    {
+                        await Task.Delay(5000);
+                    }
                 }
             }
             while(!stoppingToken.IsCancellationRequested)
             {
-                Params_MonitorPLC params_MonitorPLC = new();
-                string serOut = JsonConvert.SerializeObject(params_MonitorPLC);
-                HttpContent content = new StringContent(serOut,Encoding.UTF8,"application/json");
-                string request = ConfigurationManager.AppSettings["API"];
-                request += "MonitorPLC?ticket=";
-                request += resultGetData.MyResult.MyUserInfo.Ticket;
-                HttpResponseMessage response = await client.PostAsync(request,content);
-                responseString = await response.Content.ReadAsStringAsync();
+                using(client = new())
+                {
+                    Params_MonitorPLC params_MonitorPLC = new();
+                    string serOut = JsonConvert.SerializeObject(params_MonitorPLC);
+                    HttpContent content = new StringContent(serOut,Encoding.UTF8,"application/json");
+                    string request = ConfigurationManager.AppSettings["API"];
+                    request += "MonitorPLC?ticket=";
+                    request += resultGetData.MyResult.MyUserInfo.Ticket;
+                    HttpResponseMessage response = await client.PostAsync(request,content);
+                    responseString = await response.Content.ReadAsStringAsync();
+                }
                 await Task.Delay(delay,stoppingToken);
             }
         }
