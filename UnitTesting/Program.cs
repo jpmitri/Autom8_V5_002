@@ -43,7 +43,6 @@ namespace UnitTesting
                 Console.WriteLine("010 --> Test Digital");
                 Console.WriteLine("011 --> Test Dimmer");
                 Console.WriteLine("012 --> Test Curtain");
-
                 Console.WriteLine("Exit --> To Exit");
                 str_Option = Console.ReadLine();
                 if(str_Option == "Exit")
