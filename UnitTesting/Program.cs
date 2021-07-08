@@ -12,7 +12,6 @@ namespace UnitTesting
     {
         static void Main(string[] args)
         {
-
             #region Declaration And Initialization Section.
             string _ConnectionString = ConfigurationManager.AppSettings["CONN_STR"];
             BLCInitializer oBLCInitializer = new();
@@ -52,28 +51,7 @@ namespace UnitTesting
                 {
                     case "001":
                         {
-                            string[] colors = {
-                                        "#809bceff",
-                                        "#55b493ff",
-                                        "#ffaa89ff",
-                                        "#95b8d1ff",
-                                        "#55bcbbff",
-                                        "#ff92d5ff",
-                                        "#dd5e5eff",
-                                        "#6e7582ff",
-                                        "#e6913bff",
-                                        "#6886c5ff",
-                                        "#6e5773ff",
-                                        "#745c97ff",
-                                        "#e2afffff",
-                                        "#a2d2ffff",
-                                        "#ffafccff",
-                                        "#0096c7ff",
-                                        "#446583ff",
-                                        "#9f6af8ff",
-                                        "#86e8d2ff",
-                                        "#6e5bd8ff"
-                                        };
+                            string[] colors = ConfigurationManager.AppSettings["COLORS"].Split(",");
                             Params_Edit_Ui_List ui_List = new();
                             ui_List.My_List_To_Edit = new();
                             foreach(String color in colors)
