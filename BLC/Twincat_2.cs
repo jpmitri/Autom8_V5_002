@@ -10,7 +10,7 @@ namespace BLC
         {
             try
             {
-                System.Threading.Thread.Sleep(50);
+                
                 using (TcAdsClient tcAdsClient = new())
                 {
                     AmsNetId amsNetId = new(i_Params_Twincat2Write.AMSID);
@@ -18,7 +18,6 @@ namespace BLC
                     int varibalehande = tcAdsClient.CreateVariableHandle(i_Params_Twincat2Write.VariableName);
                     tcAdsClient.WriteAny(varibalehande, Convert.ToByte(int.Parse(i_Params_Twincat2Write.Value)));
                     tcAdsClient.Dispose();
-                    System.Threading.Thread.Sleep(250);
                     Params_Twincat2Read params_Twincat2Read = new();
                     params_Twincat2Read.AMSID = i_Params_Twincat2Write.AMSID;
                     params_Twincat2Read.Port = i_Params_Twincat2Write.Port;
@@ -39,7 +38,6 @@ namespace BLC
         }
         public async Task<String> Twincat2Toggle(Params_Twincat2Toggle i_Params_Twincat2Toggle)
         {
-            System.Threading.Thread.Sleep(50);
             try
             {
                 using (TcAdsClient tcAdsClient = new())
@@ -49,7 +47,6 @@ namespace BLC
                     int varibalehande = tcAdsClient.CreateVariableHandle(i_Params_Twincat2Toggle.VariableName);
                     tcAdsClient.WriteAny(varibalehande, Convert.ToByte(1));
                     tcAdsClient.Dispose();
-                    System.Threading.Thread.Sleep(250);
                     Params_Twincat2Read params_Twincat2Read = new();
                     params_Twincat2Read.AMSID = i_Params_Twincat2Toggle.AMSID;
                     params_Twincat2Read.Port = i_Params_Twincat2Toggle.Port;
@@ -70,9 +67,7 @@ namespace BLC
                                 }
                         );
                     await t;
-
                     
-                    System.Threading.Thread.Sleep(250);
                     result = Twincat2Read(params_Twincat2Read);
                     if (result != "0")
                     {
