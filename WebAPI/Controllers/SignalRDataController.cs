@@ -7,18 +7,15 @@ using System.Linq;
 using Microsoft.AspNetCore.SignalR;
 using WebAPI.GetHub;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public partial class DataController
 {
-
-
     private IHubContext<OutletHub> _hub;
     public DataController(IHubContext<OutletHub> hub)
     {
         _hub = hub;
     }
-
-
     public void UpdateClients(Outlet i_Outlet)
     {
         _hub.Clients.All.SendAsync("updatedOutlet",i_Outlet);
@@ -68,7 +65,7 @@ public partial class DataController
                 {
                     if(i_Outlet.OUTLET_ID != -1 && i_Outlet.CURRENT_VALUE != "-1")
                     {
-                        UpdateClients(i_Outlet);
+                        Task t = Task.Factory.StartNew(() => { UpdateClients(i_Outlet); });
                     }
                 }
             }
@@ -196,10 +193,10 @@ public partial class DataController
                 }
             }
         }
-        catch (Exception ex)
+        catch(Exception ex)
         {
             Console.WriteLine(ex);
-            
+
         }
         return false;
     }
