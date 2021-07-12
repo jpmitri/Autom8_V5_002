@@ -10,7 +10,6 @@ namespace BLC
         {
             try
             {
-                
                 using (TcAdsClient tcAdsClient = new())
                 {
                     AmsNetId amsNetId = new(i_Params_Twincat2Write.AMSID);
