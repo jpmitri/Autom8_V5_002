@@ -14,6 +14,7 @@ using System.Threading;
 
 public partial class DataController
 {
+    private Task oTask;
     private readonly IHubContext<OutletHub> _hub;
     public DataController(IHubContext<OutletHub> hub)
     {
@@ -22,6 +23,8 @@ public partial class DataController
     private void UpdateClients(Outlet i_Outlet)
     {
         _hub.Clients.All.SendAsync("updatedOutlet",i_Outlet);
+        Console.WriteLine("Signal Sent");
+        oTask.Dispose();
     }
     #region Edit_Outlet
     [HttpPost]
@@ -65,8 +68,7 @@ public partial class DataController
             {
                 if(i_Outlet.OUTLET_ID != -1 && i_Outlet.CURRENT_VALUE != "-1")
                 {
-                    Thread oThread = new(() => {UpdateClients(i_Outlet);});
-                    oThread.Start();
+                    oTask = Task.Factory.StartNew(() => { UpdateClients(i_Outlet); });
                 }
             }
         }
