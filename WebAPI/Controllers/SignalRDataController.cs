@@ -10,6 +10,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using WebAPI.GetHub;
+using System.Threading;
 
 public partial class DataController
 {
@@ -34,7 +35,6 @@ public partial class DataController
         #region Body Section.
         try
         {
-
             // Ticket Checking
             //-------------------
             if(ConfigurationManager.AppSettings["ENABLE_TICKET"] != null)
@@ -56,7 +56,6 @@ public partial class DataController
                 }
             }
             //-------------------
-
             BLC.BLC oBLC_Default = new();
             BLCInitializer oBLCInitializer = oBLC_Default.Prepare_BLCInitializer(i_Ticket,BLC.BLC.Enum_API_Method.Edit_Outlet);
             using BLC.BLC oBLC = new(oBLCInitializer);
@@ -66,7 +65,8 @@ public partial class DataController
             {
                 if(i_Outlet.OUTLET_ID != -1 && i_Outlet.CURRENT_VALUE != "-1")
                 {
-                    Task t = Task.Factory.StartNew(() => { UpdateClients(i_Outlet); });
+                    Thread oThread = new(() => {UpdateClients(i_Outlet);});
+                    oThread.Start();
                 }
             }
         }
