@@ -68,8 +68,8 @@ namespace MonitorPLCService
                         user.My_UserInfo.Password = ConfigurationManager.AppSettings["ENCRYPTED_PASSWORD"];
                         string serOut = JsonConvert.SerializeObject(user);
                         HttpContent content = new StringContent(serOut,Encoding.UTF8,"application/json");
-                        HttpResponseMessage response = await client.PostAsync(ConfigurationManager.AppSettings["API"] + "Get_Service_Data",content);
-                        responseString = await response.Content.ReadAsStringAsync();
+                        HttpResponseMessage response = await client.PostAsync(ConfigurationManager.AppSettings["API"] + "Get_Service_Data",content,stoppingToken);
+                        responseString = await response.Content.ReadAsStringAsync(stoppingToken);
                         resultGetData = JsonConvert.DeserializeObject<User>(responseString);
                         loggedIn = true;
                     }
@@ -80,7 +80,7 @@ namespace MonitorPLCService
                     }
                     if(!loggedIn)
                     {
-                        await Task.Delay(5000);
+                        await Task.Delay(5000,stoppingToken);
                     }
                 }
             }
@@ -94,8 +94,8 @@ namespace MonitorPLCService
                     string request = ConfigurationManager.AppSettings["API"];
                     request += "MonitorPLC?ticket=";
                     request += resultGetData.MyResult.MyUserInfo.Ticket;
-                    HttpResponseMessage response = await client.PostAsync(request,content);
-                    responseString = await response.Content.ReadAsStringAsync();
+                    HttpResponseMessage response = await client.PostAsync(request,content,stoppingToken);
+                    responseString = await response.Content.ReadAsStringAsync(stoppingToken);
                 }
                 await Task.Delay(delay,stoppingToken);
             }
@@ -172,7 +172,7 @@ namespace MonitorPLCService
 
     internal static class Converter
     {
-        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        public static readonly JsonSerializerSettings Settings = new()
         {
             MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
             DateParseHandling = DateParseHandling.None,

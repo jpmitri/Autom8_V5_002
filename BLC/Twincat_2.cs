@@ -10,24 +10,22 @@ namespace BLC
         {
             try
             {
-                using (TcAdsClient tcAdsClient = new())
+                using TcAdsClient tcAdsClient = new();
+                AmsNetId amsNetId = new(i_Params_Twincat2Write.AMSID);
+                tcAdsClient.Connect(amsNetId,int.Parse(i_Params_Twincat2Write.Port));
+                int varibalehande = tcAdsClient.CreateVariableHandle(i_Params_Twincat2Write.VariableName);
+                tcAdsClient.WriteAny(varibalehande,Convert.ToByte(int.Parse(i_Params_Twincat2Write.Value)));
+                tcAdsClient.Dispose();
+                Params_Twincat2Read params_Twincat2Read = new();
+                params_Twincat2Read.AMSID = i_Params_Twincat2Write.AMSID;
+                params_Twincat2Read.Port = i_Params_Twincat2Write.Port;
+                params_Twincat2Read.VariableName = i_Params_Twincat2Write.VariableName;
+                string result = Twincat2Read(params_Twincat2Read);
+                if(result != i_Params_Twincat2Write.Value)
                 {
-                    AmsNetId amsNetId = new(i_Params_Twincat2Write.AMSID);
-                    tcAdsClient.Connect(amsNetId, int.Parse(i_Params_Twincat2Write.Port));
-                    int varibalehande = tcAdsClient.CreateVariableHandle(i_Params_Twincat2Write.VariableName);
-                    tcAdsClient.WriteAny(varibalehande, Convert.ToByte(int.Parse(i_Params_Twincat2Write.Value)));
-                    tcAdsClient.Dispose();
-                    Params_Twincat2Read params_Twincat2Read = new();
-                    params_Twincat2Read.AMSID = i_Params_Twincat2Write.AMSID;
-                    params_Twincat2Read.Port = i_Params_Twincat2Write.Port;
-                    params_Twincat2Read.VariableName = i_Params_Twincat2Write.VariableName;
-                    string result = Twincat2Read(params_Twincat2Read);
-                    if (result != i_Params_Twincat2Write.Value)
-                    {
-                        throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_0004));
-                    }
-                    return result;
+                    throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_0004));
                 }
+                return result;
             }
             catch (Exception e)
             {
@@ -39,41 +37,39 @@ namespace BLC
         {
             try
             {
-                using (TcAdsClient tcAdsClient = new())
+                using TcAdsClient tcAdsClient = new();
+                AmsNetId amsNetId = new(i_Params_Twincat2Toggle.AMSID);
+                tcAdsClient.Connect(amsNetId,int.Parse(i_Params_Twincat2Toggle.Port));
+                int varibalehande = tcAdsClient.CreateVariableHandle(i_Params_Twincat2Toggle.VariableName);
+                tcAdsClient.WriteAny(varibalehande,Convert.ToByte(1));
+                tcAdsClient.Dispose();
+                Params_Twincat2Read params_Twincat2Read = new();
+                params_Twincat2Read.AMSID = i_Params_Twincat2Toggle.AMSID;
+                params_Twincat2Read.Port = i_Params_Twincat2Toggle.Port;
+                params_Twincat2Read.VariableName = i_Params_Twincat2Toggle.VariableName;
+                string result = Twincat2Read(params_Twincat2Read);
+                if(result != "1")
                 {
-                    AmsNetId amsNetId = new(i_Params_Twincat2Toggle.AMSID);
-                    tcAdsClient.Connect(amsNetId, int.Parse(i_Params_Twincat2Toggle.Port));
-                    int varibalehande = tcAdsClient.CreateVariableHandle(i_Params_Twincat2Toggle.VariableName);
-                    tcAdsClient.WriteAny(varibalehande, Convert.ToByte(1));
-                    tcAdsClient.Dispose();
-                    Params_Twincat2Read params_Twincat2Read = new();
-                    params_Twincat2Read.AMSID = i_Params_Twincat2Toggle.AMSID;
-                    params_Twincat2Read.Port = i_Params_Twincat2Toggle.Port;
-                    params_Twincat2Read.VariableName = i_Params_Twincat2Toggle.VariableName;
-                    string result = Twincat2Read(params_Twincat2Read);
-                    if (result != "1")
-                    {
-                        throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_0004));
-                    }
-                    Task t = Task.Factory.StartNew(
-                () =>
-                                {
-                                    System.Threading.Thread.Sleep(i_Params_Twincat2Toggle.Delay);
-                                    tcAdsClient.Connect(amsNetId, int.Parse(i_Params_Twincat2Toggle.Port));
-                                    varibalehande = tcAdsClient.CreateVariableHandle(i_Params_Twincat2Toggle.VariableName);
-                                    tcAdsClient.WriteAny(varibalehande, Convert.ToByte(0));
-                                    tcAdsClient.Dispose();
-                                }
-                        );
-                    await t;
-                    
-                    result = Twincat2Read(params_Twincat2Read);
-                    if (result != "0")
-                    {
-                        throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_0004));
-                    }
-                    return result;
+                    throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_0004));
                 }
+                Task t = Task.Factory.StartNew(
+            () =>
+                            {
+                                System.Threading.Thread.Sleep(i_Params_Twincat2Toggle.Delay);
+                                tcAdsClient.Connect(amsNetId,int.Parse(i_Params_Twincat2Toggle.Port));
+                                varibalehande = tcAdsClient.CreateVariableHandle(i_Params_Twincat2Toggle.VariableName);
+                                tcAdsClient.WriteAny(varibalehande,Convert.ToByte(0));
+                                tcAdsClient.Dispose();
+                            }
+                    );
+                await t;
+
+                result = Twincat2Read(params_Twincat2Read);
+                if(result != "0")
+                {
+                    throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_0004));
+                }
+                return result;
 
             }
             catch (Exception e)
@@ -86,15 +82,14 @@ namespace BLC
         {
             try
             {
-                using (TcAdsClient tcAdsClient = new())
-                {
-                    AmsNetId amsNetId = new(i_Params_Twincat2Read.AMSID);
-                    tcAdsClient.Connect(amsNetId, int.Parse(i_Params_Twincat2Read.Port));
-                    int varibalehande = tcAdsClient.CreateVariableHandle(i_Params_Twincat2Read.VariableName);
-                    string res = tcAdsClient.ReadAny(varibalehande, varibalehande.GetType()).ToString(); ;
-                    tcAdsClient.Dispose();
-                    return res;
-                }
+                using TcAdsClient tcAdsClient = new();
+                AmsNetId amsNetId = new(i_Params_Twincat2Read.AMSID);
+                tcAdsClient.Connect(amsNetId,int.Parse(i_Params_Twincat2Read.Port));
+                int varibalehande = tcAdsClient.CreateVariableHandle(i_Params_Twincat2Read.VariableName);
+                string res = tcAdsClient.ReadAny(varibalehande,varibalehande.GetType()).ToString();
+                ;
+                tcAdsClient.Dispose();
+                return res;
             }
             catch (Exception e)
             {

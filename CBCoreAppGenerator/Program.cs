@@ -1,50 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Configuration;
-using System.Net;
 using System.Data.Linq;
+using System.Net;
 
 namespace CodeGenerator
 {
-    class Program
+    internal class Program
     {
         #region Members
-        private static string _ConnectionString = ConfigurationManager.AppSettings["CONN_STR"];
-        private static DataContext oDataContext = new DataContext(_ConnectionString);
-        private static CodeBoosterClientNS.CodeBoosterClient oCodeBoosterClient = new CodeBoosterClientNS.CodeBoosterClient(oDataContext);
-        private static CodeBooster oCodeBooster = oCodeBoosterClient.My_CodeBooster;
+        private static readonly String _ConnectionString = ConfigurationManager.AppSettings["CONN_STR"];
+        private static readonly DataContext oDataContext = new(_ConnectionString);
+        private static readonly CodeBoosterClientNS.CodeBoosterClient oCodeBoosterClient = new(oDataContext);
+        private static readonly CodeBooster oCodeBooster = oCodeBoosterClient.My_CodeBooster;
         #endregion
         #region Main
-        static void Main(string[] args)
+        private static void Main()
         {
+
             #region Declaration And Initialization Section.
-            string str_Option = string.Empty;
-            string str_TableName = string.Empty;
-            string str_FolderPath = string.Empty;
-            Tools.Tools oTools = new Tools.Tools();
-
-            Hierarchy oHierarchy = new Hierarchy();
-            OneToMany oOneToMany = new OneToMany();
-            List<String> oList_ChildTables = new List<string>();
-
-            Hierarchy oApplicationHierarchy = new Hierarchy();
-
-
+            Tools.Tools oTools = new();
+            Hierarchy oHierarchy = new();
+            OneToMany oOneToMany = new();
+            List<String> oList_ChildTables = new();
+            Hierarchy oApplicationHierarchy = new();
             // Initialization.
             // ---------------------------------------------------------------------   
-            oCodeBooster.Tables_Excluded_From_Generatrion_Process = new List<string>();
-            oCodeBooster.KeysMapper = new Dictionary<string, string>();
+            oCodeBooster.Tables_Excluded_From_Generatrion_Process = new();
+            oCodeBooster.KeysMapper = new();
             oCodeBooster.APIMethodsGenerationMode = Enum_APIMethodsGenerationMode.Selection;
-            oCodeBooster.APIMethodsSelection = new List<string>();
-            oCodeBooster.Methods_With_Events = new List<string>();
-            oCodeBooster.DefaultRecordsToCreate = new Dictionary<string, string>();
-            oCodeBooster.Tables_Static_Data = new List<string>();
-            oCodeBooster.NonSetup_Fields = new List<string>();
-            oCodeBooster.Tables_To_Create_Get_By_Hierarchy = new List<HierarchyBracket>();
-            oCodeBooster.Tables_Exluded_From_12M_Hanlder = new List<string>();
-            oCodeBooster.ByPassed_PreCheck_Notifications = new List<Notification_ByPassing>();
+            oCodeBooster.APIMethodsSelection = new();
+            oCodeBooster.Methods_With_Events = new();
+            oCodeBooster.DefaultRecordsToCreate = new();
+            oCodeBooster.Tables_Static_Data = new();
+            oCodeBooster.NonSetup_Fields = new();
+            oCodeBooster.Tables_To_Create_Get_By_Hierarchy = new();
+            oCodeBooster.Tables_Exluded_From_12M_Hanlder = new();
             oCodeBooster.AssemblyPath = ConfigurationManager.AppSettings["BLC_PATH"];
             oCodeBooster.Is_Generate_API_Caller = true;
             oCodeBooster.Is_Generate_Kotlin_API_Caller = true;
@@ -56,21 +47,20 @@ namespace CodeGenerator
             oCodeBoosterClient.Is_Handle_Custom_Procedures = true;
             oCodeBoosterClient.Authenticate_User();
 
-
-            Params_ConvertTypeSchemaToUIFields oParams_ConvertTypeSchemaToUIFields = new Params_ConvertTypeSchemaToUIFields();
-            Search_AdvancedProp oSearch_AdvancedProp = new Search_AdvancedProp();
-            WebClient oWebClient = new WebClient();
-            UIFields oUIFields = new UIFields();
+            Params_ConvertTypeSchemaToUIFields oParams_ConvertTypeSchemaToUIFields = new();
+            Search_AdvancedProp oSearch_AdvancedProp = new();
+            WebClient oWebClient = new();
+            UIFields oUIFields = new();
             // ---------------------------------------------------------------------   
 
 
             #region Exluded Tables From Generation Process
-            oCodeBooster.Tables_Excluded_From_Generatrion_Process = new List<string>();
+            oCodeBooster.Tables_Excluded_From_Generatrion_Process = new();
             //oCodeBooster.Tables_Excluded_From_Generatrion_Process.Add("[TBL_MENU]");
             //oCodeGenerator.Tables_Excluded_From_Generatrion_Process.Add("[TBL_ACCOUNT]");
             #endregion
             #region Excluded Properties From Generation Process
-            oCodeBooster.Properties_Excluded_From_Generation_Process = new List<string>();
+            oCodeBooster.Properties_Excluded_From_Generation_Process = new();
             //oCodeBooster.Properties_Excluded_From_Generation_Process.Add("[TBL_LEG_PRODUCT]");
             //oCodeBooster.Properties_Excluded_From_Generation_Process.Add("[TBL_LEG_PRODUCT_EINFO]");
             #endregion
@@ -81,11 +71,13 @@ namespace CodeGenerator
 
             #endregion
             #region Excluding Tables From 12M Hanlder
-            oCodeBooster.Tables_Exluded_From_12M_Hanlder = new List<string>();
-            oCodeBooster.Tables_Exluded_From_12M_Hanlder.Add("[TBL_OWNER]");
-            oCodeBooster.Tables_Exluded_From_12M_Hanlder.Add("[TBL_USER]");
-            oCodeBooster.Tables_Exluded_From_12M_Hanlder.Add("[TBL_INC]");
-            oCodeBooster.Tables_Exluded_From_12M_Hanlder.Add("[TBL_SETUP]");
+            oCodeBooster.Tables_Exluded_From_12M_Hanlder = new()
+            {
+                "[TBL_OWNER]",
+                "[TBL_USER]",
+                "[TBL_INC]",
+                "[TBL_SETUP]"
+            };
             #endregion
             #region Handling Static Data            
             //oCodeBooster.Tables_Static_Data.Add("[TBL_LOC_L1]");
@@ -165,9 +157,11 @@ namespace CodeGenerator
             //      );
             #endregion
             #region ByPassing Notification
-            oCodeBooster.ByPassed_PreCheck_Notifications = new List<Notification_ByPassing>();
-            oCodeBooster.ByPassed_PreCheck_Notifications.Add(new Notification_ByPassing() { TABLE_NAME = "[TBL_USER_TYPE]", COLUMN_NAME = "[USER_TYPE_CODE]", My_PreCheck_To_ByPass = Enum_Precheck_Enum.INVALID_CODE_FIELD });
-            oCodeBooster.ByPassed_PreCheck_Notifications.Add(new Notification_ByPassing() { TABLE_NAME = "[TBL_PERSON]", COLUMN_NAME = "[CHILD_PERSON_ID]", My_PreCheck_To_ByPass = Enum_Precheck_Enum.MAPPED_KEY });
+            oCodeBooster.ByPassed_PreCheck_Notifications = new()
+            {
+                new() { TABLE_NAME = "[TBL_USER_TYPE]",COLUMN_NAME = "[USER_TYPE_CODE]",My_PreCheck_To_ByPass = Enum_Precheck_Enum.INVALID_CODE_FIELD },
+                new() { TABLE_NAME = "[TBL_PERSON]",COLUMN_NAME = "[CHILD_PERSON_ID]",My_PreCheck_To_ByPass = Enum_Precheck_Enum.MAPPED_KEY }
+            };
             #endregion
             #region Caching
             //oCodeBooster.Is_Caching_Enabled = true;
@@ -185,7 +179,7 @@ namespace CodeGenerator
 
             #endregion
             #region Cascade
-            oCodeBooster.List_Cascade_Tables = new List<Cascade>();
+            oCodeBooster.List_Cascade_Tables = new();
             //oCodeBooster.List_Cascade_Tables.Add(new Cascade() { ParentTable = "[TBL_AC_IMAGE]", ChildTables = new List<string>() { "[TBL_AC_IMAGE_RC]" } });
 
             #endregion
@@ -198,7 +192,7 @@ namespace CodeGenerator
             Console.WriteLine("003 --> Generate UI");
             Console.WriteLine("051 --> Generate Mobile Native UI");
 
-            str_Option = Console.ReadLine();
+            String str_Option = Console.ReadLine();
 
 
             #region API
@@ -283,7 +277,7 @@ namespace CodeGenerator
             oCodeBooster.Is_By_Criteria_Shadowed = true;
             #region Inheritance
             #endregion
-            switch (str_Option)
+            switch(str_Option)
             {
                 #region case "001":
                 case "001":
@@ -325,7 +319,7 @@ namespace CodeGenerator
 
                     #endregion
 
-                    oCodeBooster.Methods_With_Events_By_Ref = new List<string>();
+                    oCodeBooster.Methods_With_Events_By_Ref = new();
                     #region Events.
                     #region Normal Events.
                     oCodeBooster.Methods_With_Events.Add("Edit_Uploaded_file");
@@ -342,39 +336,39 @@ namespace CodeGenerator
 
                     #endregion
                     #endregion
-                    oCodeBooster.List_Reset_Topology = new List<Reset_Topology>();
+                    oCodeBooster.List_Reset_Topology = new();
                     //oCodeBooster.List_Reset_Topology.Add(new Reset_Topology() { ParentTable = "[TBL_PERSONS]", ChildTables = new List<string>() { "[TBL_ADDRES]", "[TBL_CONTACT]" } });
                     #region Eager Loading
-                    oCodeBooster.List_Eager_Loading = new List<Eager_Loading>();
-                    oCodeBooster.List_Eager_Loading.Add(
-                        new Eager_Loading()
+                    oCodeBooster.List_Eager_Loading = new()
+                    {
+                        new()
                         {
                             Method_Name = "Get_Plc_By_OWNER_ID",
                             ParentTable = "[TBL_PLC]",
-                            ChildTables = new List<string>()
+                            ChildTables = new()
                             {
                                 "[TBL_HARDWARE_LINK]"
                             }
-                        });
-                    oCodeBooster.List_Eager_Loading.Add(
-                        new Eager_Loading()
+                        },
+                        new()
                         {
                             Method_Name = "Get_Hardware_link_By_OWNER_ID_Adv",
                             ParentTable = "[TBL_HARDWARE_LINK]",
-                            ChildTables = new List<string>()
+                            ChildTables = new()
                             {
                                 "[TBL_OUTLET]"
                             }
-                        });
+                        }
+                    };
 
                     #endregion
 
                     #region Offline
-                    oCodeBooster.List_Offline_Tables = new List<Offline_Table>();
+                    oCodeBooster.List_Offline_Tables = new();
 
                     #endregion
                     #region One2Many
-                    oCodeBooster.List_Inheritance = new List<Inheritance>();
+                    oCodeBooster.List_Inheritance = new();
                     //oCodeBooster.List_Inheritance.Add(new Inheritance() { ParentTable = "[TBL_PERSON]", ChildTable = "[TBL_ADDRESS]", RelationField = "[PERSON_ID]", RelationType = "12M" });                    
                     #endregion
                     #region Generate SP's & BLC Layer
@@ -388,7 +382,7 @@ namespace CodeGenerator
                     oCodeBooster.My_Enum_API_Target = Enum_API_Target.WebAPI;
                     oCodeBooster.My_Enum_API_Accessibility = Enum_API_Accessibility.Same_Domain;
                     #region Api Bypass Ticketing
-                    oCodeBooster.List_ByPass_Ticketing = new List<string>();
+                    oCodeBooster.List_ByPass_Ticketing = new();
                     oCodeBooster.List_ByPass_Ticketing.Add("Get_All_Data");
                     oCodeBooster.List_ByPass_Ticketing.Add("Admin_log_in");
                     oCodeBooster.List_ByPass_Ticketing.Add("Get_Service_Data");
@@ -404,9 +398,9 @@ namespace CodeGenerator
                 case "003":
 
                     // --------------
-                    UIFields oUIFields_EditUI = new UIFields();
-                    UIFields oUIFields_Criteria = new UIFields();
-                    UIFields oUIFields_Result = new UIFields();
+                    UIFields oUIFields_EditUI = new();
+                    UIFields oUIFields_Criteria = new();
+                    UIFields oUIFields_Result = new();
                     // --------------
 
                     // --------------
@@ -427,22 +421,28 @@ namespace CodeGenerator
 
                     #region Person
                     #region Search Screen
-                    oUIFields_Criteria = new UIFields();
-                    oUIFields_Criteria.MainTableName = "[TBL_PERSON]";
-                    oUIFields_Criteria.Based_On_Type = "BLC.Params_Get_Person_By_Criteria";
+                    oUIFields_Criteria = new()
+                    {
+                        MainTableName = "[TBL_PERSON]",
+                        Based_On_Type = "BLC.Params_Get_Person_By_Criteria"
+                    };
 
-                    oUIFields_Result = new UIFields();
-                    oUIFields_Result.MainTableName = "[TBL_PERSON]";
-                    oUIFields_Result.Based_On_Type = "BLC.Person";
-                    oUIFields_Result.GetMethodName = "Get_Person_By_Criteria";
-                    oUIFields_Result.GridFields = new List<GridField>();
+                    oUIFields_Result = new()
+                    {
+                        MainTableName = "[TBL_PERSON]",
+                        Based_On_Type = "BLC.Person",
+                        GetMethodName = "Get_Person_By_Criteria",
+                        GridFields = new()
+                    };
 
 
 
-                    oSearch_AdvancedProp = new Search_AdvancedProp();
-                    oSearch_AdvancedProp.ContainerMargins = "0,5,0,5";
+                    oSearch_AdvancedProp = new()
+                    {
+                        ContainerMargins = "0,5,0,5"
+                    };
                     oCodeBooster.Entity_FriendlyName = "Person";
-                    oCodeBoosterClient.Generate_ListUI(Enum_SearchMethod.With_Criteria_Section, oUIFields_Criteria, oUIFields_Result, oSearch_AdvancedProp);
+                    oCodeBoosterClient.Generate_ListUI(Enum_SearchMethod.With_Criteria_Section,oUIFields_Criteria,oUIFields_Result,oSearch_AdvancedProp);
                     #endregion
                     #endregion
 
@@ -456,24 +456,28 @@ namespace CodeGenerator
                 #endregion
                 #region Case "051"
                 case "051":
-                    Params_Generate_Mobile_Native_UI oParams_Generate_Mobile_Native_UI = new Params_Generate_Mobile_Native_UI();
-                    oParams_Generate_Mobile_Native_UI.MOBILE_PLATFORM = "ANDROID";
-                    oParams_Generate_Mobile_Native_UI.VIEW_TYPE = "001";
-                    oParams_Generate_Mobile_Native_UI.TABLE_NAME = "[TBL_AC]";
-                    oParams_Generate_Mobile_Native_UI.GET_METHOD_NAME = "Get_Ac_By_Where";
-                    oParams_Generate_Mobile_Native_UI.TITLE = "Hotels";
-                    oParams_Generate_Mobile_Native_UI.BAR_BUTTON_ITEM_TITLE = "Bla Bla";
-                    oParams_Generate_Mobile_Native_UI.IMAGE_BASE_URL = @"https://www.igloorooms.com/irimages/aclogo/AcLogo_\(myData[indexPath.row].AC_ID!).jpg";
+                    Params_Generate_Mobile_Native_UI oParams_Generate_Mobile_Native_UI = new()
+                    {
+                        MOBILE_PLATFORM = "ANDROID",
+                        VIEW_TYPE = "001",
+                        TABLE_NAME = "[TBL_AC]",
+                        GET_METHOD_NAME = "Get_Ac_By_Where",
+                        TITLE = "Hotels",
+                        BAR_BUTTON_ITEM_TITLE = "Bla Bla",
+                        IMAGE_BASE_URL = @"https://www.igloorooms.com/irimages/aclogo/AcLogo_\(myData[indexPath.row].AC_ID!).jpg"
+                    };
                     //oCodeBoosterClient.Generate_Mobile_Native_UI(oParams_Generate_Mobile_Native_UI);
 
-                    oParams_Generate_Mobile_Native_UI = new Params_Generate_Mobile_Native_UI();
-                    oParams_Generate_Mobile_Native_UI.MOBILE_PLATFORM = "IOS";
-                    oParams_Generate_Mobile_Native_UI.VIEW_TYPE = "001";
-                    oParams_Generate_Mobile_Native_UI.TABLE_NAME = "[TBL_AC]";
-                    oParams_Generate_Mobile_Native_UI.GET_METHOD_NAME = "Get_Ac_By_Where";
-                    oParams_Generate_Mobile_Native_UI.TITLE = "Hotels";
-                    oParams_Generate_Mobile_Native_UI.BAR_BUTTON_ITEM_TITLE = "Bla Bla";
-                    oParams_Generate_Mobile_Native_UI.IMAGE_BASE_URL = @"https://www.igloorooms.com/irimages/aclogo/AcLogo_\(myData[indexPath.row].AC_ID!).jpg";
+                    oParams_Generate_Mobile_Native_UI = new()
+                    {
+                        MOBILE_PLATFORM = "IOS",
+                        VIEW_TYPE = "001",
+                        TABLE_NAME = "[TBL_AC]",
+                        GET_METHOD_NAME = "Get_Ac_By_Where",
+                        TITLE = "Hotels",
+                        BAR_BUTTON_ITEM_TITLE = "Bla Bla",
+                        IMAGE_BASE_URL = @"https://www.igloorooms.com/irimages/aclogo/AcLogo_\(myData[indexPath.row].AC_ID!).jpg"
+                    };
                     //oCodeBoosterClient.Generate_Mobile_Native_UI(oParams_Generate_Mobile_Native_UI);
 
                     break;
@@ -486,7 +490,3 @@ namespace CodeGenerator
         #endregion
     }
 }
-
-
-
-
