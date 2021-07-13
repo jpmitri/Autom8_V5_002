@@ -461,7 +461,9 @@ namespace BLC
     public partial class Outlet
     {
         public Outlet_ui My_Outlet_Ui { get; set; }
+        #nullable enable
         public Ui? UI_Element { get; set; }
+        #nullable disable
     }
     #endregion
     #region Outlet UI
