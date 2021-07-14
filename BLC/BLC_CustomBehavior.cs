@@ -366,30 +366,35 @@ namespace BLC
             List<Outlet> result = new();
             Params_Get_Plc_By_OWNER_ID params_Get_Plc_By_OWNER_ID = new();
             params_Get_Plc_By_OWNER_ID.OWNER_ID = 1;
-            List<Plc> plcs = new(); 
-            plcs = Get_Plc_By_OWNER_ID(params_Get_Plc_By_OWNER_ID);
+            List<Plc> plcs = Get_Plc_By_OWNER_ID(params_Get_Plc_By_OWNER_ID);
             try
             {
-                foreach(Plc plc in plcs)
+                if(plcs is not null)
                 {
-                    foreach(Hardware_link Hardware in plc.My_Hardware_link)
+                    foreach(Plc plc in plcs)
                     {
-                        if(Hardware.My_Outlet is not null)
+                        if(plc.My_Hardware_link is not null)
                         {
-                            foreach(Outlet outlet in Hardware.My_Outlet)
+                            foreach(Hardware_link Hardware in plc.My_Hardware_link)
                             {
-                                if(outlet.OUTLET_TYPE_ID is 1 or 2)
+                                if(Hardware.My_Outlet is not null)
                                 {
-                                    Params_Twincat2Read params_Twincat2Read = new();
-                                    params_Twincat2Read.AMSID = plc.LOCATION;
-                                    params_Twincat2Read.Port = plc.PORT;
-                                    params_Twincat2Read.VariableName = Hardware.PLC_ADDRESS;
-
-                                    String twRead = Twincat2Read(params_Twincat2Read);
-                                    if(outlet.CURRENT_VALUE != twRead)
+                                    foreach(Outlet outlet in Hardware.My_Outlet)
                                     {
-                                        outlet.CURRENT_VALUE = twRead;
-                                        result.Add(outlet);
+                                        if(outlet.OUTLET_TYPE_ID is 1 or 2)
+                                        {
+                                            Params_Twincat2Read params_Twincat2Read = new();
+                                            params_Twincat2Read.AMSID = plc.LOCATION;
+                                            params_Twincat2Read.Port = plc.PORT;
+                                            params_Twincat2Read.VariableName = Hardware.PLC_ADDRESS;
+
+                                            String twRead = Twincat2Read(params_Twincat2Read);
+                                            if(outlet.CURRENT_VALUE != twRead)
+                                            {
+                                                outlet.CURRENT_VALUE = twRead;
+                                                result.Add(outlet);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -462,9 +467,9 @@ namespace BLC
     public partial class Outlet
     {
         public Outlet_ui My_Outlet_Ui { get; set; }
-        #nullable enable
+#nullable enable
         public Ui? UI_Element { get; set; }
-        #nullable disable
+#nullable disable
     }
     #endregion
     #region Outlet UI
