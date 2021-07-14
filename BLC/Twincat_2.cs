@@ -62,15 +62,12 @@ namespace BLC
                                 tcAdsClient.Dispose();
                             }
                     );
-                await t;
-
                 result = Twincat2Read(params_Twincat2Read);
                 if(result != "0")
                 {
                     throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_0004));
                 }
                 return result;
-
             }
             catch (Exception e)
             {

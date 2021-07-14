@@ -366,7 +366,8 @@ namespace BLC
             List<Outlet> result = new();
             Params_Get_Plc_By_OWNER_ID params_Get_Plc_By_OWNER_ID = new();
             params_Get_Plc_By_OWNER_ID.OWNER_ID = 1;
-            List<Plc> plcs = Get_Plc_By_OWNER_ID(params_Get_Plc_By_OWNER_ID);
+            List<Plc> plcs = new(); 
+            plcs = Get_Plc_By_OWNER_ID(params_Get_Plc_By_OWNER_ID);
             try
             {
                 foreach(Plc plc in plcs)
