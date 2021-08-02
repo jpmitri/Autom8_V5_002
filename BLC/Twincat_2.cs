@@ -65,6 +65,8 @@ namespace BLC
                                 {
                                     throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_0004));
                                 }
+                                i_Params_Twincat2Toggle.outlet.CURRENT_VALUE = "0";
+                                Edit_Outlet(i_Params_Twincat2Toggle.outlet);
                             }
                     );
             }
@@ -108,6 +110,7 @@ namespace BLC
         public string AMSID { get; set; }
         public string Port { get; set; }
         public int Delay { get; set; }
+        public Outlet outlet { get; set; }
     }
     public partial class Params_Twincat2Read
     {
