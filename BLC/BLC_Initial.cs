@@ -292,8 +292,6 @@ namespace BLC
                                 params_Twincat2Toggle.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
                                 params_Twincat2Toggle.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
                                 string[] states = i_Outlet.My_Hardware_link.PLC_ADDRESS.Split(",");
-                                Console.WriteLine(states[0]);
-                                Console.WriteLine(states[1]);
                                 Params_Get_Outlet_By_OUTLET_ID params_Get_Outlet_By_OUTLET_ID = new();
                                 params_Get_Outlet_By_OUTLET_ID.OUTLET_ID = i_Outlet.OUTLET_ID;
                                 Params_Twincat2Write params_Twincat2Write = new();
@@ -321,13 +319,11 @@ namespace BLC
                                 switch(Get_Outlet_By_OUTLET_ID(params_Get_Outlet_By_OUTLET_ID).CURRENT_VALUE)
                                 {
                                     case "1":
-                                        Console.WriteLine("DB case 1");
                                         params_Twincat2Write.VariableName = states[0];
                                         params_Twincat2Write.Value = "0";
                                         _ = Twincat2Write(params_Twincat2Write);
                                         break;
                                     case "2":
-                                        Console.WriteLine("DB case 2");
                                         params_Twincat2Write.VariableName = states[1];
                                         params_Twincat2Write.Value = "0";
                                         _ = Twincat2Write(params_Twincat2Write);
@@ -338,17 +334,14 @@ namespace BLC
                                 switch(i_Outlet.CURRENT_VALUE)
                                 {
                                     case "1":
-                                        Console.WriteLine("PLC Case 1");
                                         params_Twincat2Toggle.VariableName = states[0];
                                         _ = Twincat2Toggle(params_Twincat2Toggle);
                                         break;
                                     case "2":
-                                        Console.WriteLine("PLC Case 2");
                                         params_Twincat2Toggle.VariableName = states[1];
                                         _ = Twincat2Toggle(params_Twincat2Toggle);
                                         break;
                                     default:
-                                        Console.WriteLine("PLC case default");
                                         params_Twincat2Write.VariableName = states[0];
                                         params_Twincat2Write.Value = "0";
                                         _ = Twincat2Write(params_Twincat2Write);

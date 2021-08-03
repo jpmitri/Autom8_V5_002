@@ -23,7 +23,6 @@ public partial class DataController
     private void UpdateClients(Outlet i_Outlet)
     {
         _hub.Clients.All.SendAsync("updatedOutlet",i_Outlet);
-        Console.WriteLine("Signal Sent");
         oTask.Dispose();
     }
     #region Edit_Outlet
