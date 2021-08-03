@@ -304,21 +304,18 @@ namespace BLC
                                 {
                                     case "1":
                                         Console.WriteLine("case 1");
-                                        params_Twincat2Write.VariableName = states[1];
-                                        params_Twincat2Write.Value = "0";
-                                        _ = Twincat2Write(params_Twincat2Write);
-                                        params_Twincat2Toggle.VariableName = states[0];
-                                        break;
-                                    case "2":
-                                        Console.WriteLine("case 2");
                                         params_Twincat2Write.VariableName = states[0];
                                         params_Twincat2Write.Value = "0";
                                         _ = Twincat2Write(params_Twincat2Write);
-                                        params_Twincat2Toggle.VariableName = states[1];
+                                        break;
+                                    case "2":
+                                        Console.WriteLine("case 2");
+                                        params_Twincat2Write.VariableName = states[1];
+                                        params_Twincat2Write.Value = "0";
+                                        _ = Twincat2Write(params_Twincat2Write);
                                         break;
                                     default:
                                         Console.WriteLine("case default");
-
                                         params_Twincat2Write.VariableName = states[0];
                                         params_Twincat2Write.Value = "0";
                                         _ = Twincat2Write(params_Twincat2Write);
@@ -345,10 +342,20 @@ namespace BLC
                                 {
                                     params_Twincat2Toggle.Delay = 40000;
                                 }
-                                if(i_Outlet.CURRENT_VALUE != "0")
-                                {
-                                    _ = Twincat2Toggle(params_Twincat2Toggle);
-                                }
+                                    switch(i_Outlet.CURRENT_VALUE)
+                                    {
+                                    case "1":
+                                        params_Twincat2Toggle.VariableName = states[0];
+                                        _ = Twincat2Toggle(params_Twincat2Toggle);
+                                        break;
+                                    case "2":
+                                        params_Twincat2Toggle.VariableName = states[1];
+                                        _ = Twincat2Toggle(params_Twincat2Toggle);
+                                        break;
+                                    default:
+                                        break;
+                                    }
+                                   
                             }
                             break;
                         case 4:
