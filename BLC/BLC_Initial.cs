@@ -312,6 +312,12 @@ namespace BLC
                                         _ = Twincat2Write(params_Twincat2Write);
                                         break;
                                     default:
+                                        params_Twincat2Write.VariableName = states[0];
+                                        params_Twincat2Write.Value = "0";
+                                        _ = Twincat2Write(params_Twincat2Write);
+                                        params_Twincat2Write.VariableName = states[1];
+                                        params_Twincat2Write.Value = "0";
+                                        _ = Twincat2Write(params_Twincat2Write);
                                         break;
                                 }
                                 List<dynamic> oQuery = _AppContext.UP_GET_SETUP_ENTRY(1,"_TIMER","001");
