@@ -302,49 +302,20 @@ namespace BLC
                                 switch(Get_Outlet_By_OUTLET_ID(params_Get_Outlet_By_OUTLET_ID).CURRENT_VALUE)
                                 {
                                     case "1":
-                                        if (states.Length > 1)
-                                        {
-                                            params_Twincat2Write.VariableName = states[0];
-                                        }
-                                        else
-                                        {
-                                            params_Twincat2Write.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
-                                        }
+                                        params_Twincat2Write.VariableName = states[0];
                                         params_Twincat2Write.Value = "0";
                                         _ = Twincat2Write(params_Twincat2Write);
                                         break;
                                     case "2":
-                                        if (states.Length > 1)
-                                        {
-                                            params_Twincat2Write.VariableName = states[1];
-                                        }
-                                        else
-                                        {
-                                            params_Twincat2Write.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
-                                        }
+                                        params_Twincat2Write.VariableName = states[1];
                                         params_Twincat2Write.Value = "0";
                                         _ = Twincat2Write(params_Twincat2Write);
                                         break;
                                     default:
-                                        if (states.Length > 1)
-                                        {
-                                            params_Twincat2Write.VariableName = states[0];
-                                        }
-                                        else
-                                        {
-                                            params_Twincat2Write.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
-                                        }
+                                        params_Twincat2Write.VariableName = states[0];
                                         params_Twincat2Write.Value = "0";
                                         _ = Twincat2Write(params_Twincat2Write);
-
-                                        if (states.Length > 1)
-                                        {
-                                            params_Twincat2Write.VariableName = states[1];
-                                        }
-                                        else
-                                        {
-                                            params_Twincat2Write.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
-                                        }
+                                        params_Twincat2Write.VariableName = states[1];
                                         params_Twincat2Write.Value = "0";
                                         _ = Twincat2Write(params_Twincat2Write);
                                         break;
