@@ -11,7 +11,7 @@ using DALC;
 namespace BLC
 {
     #region BLC
-    public partial class BLC : IDisposable
+    public partial class BLC: IDisposable
     {
         #region Enumeration
         public enum Enum_Language
@@ -37,7 +37,7 @@ namespace BLC
         public enum Enum_Environment
         {
             BHS = 0,
-            MS  = 1
+            MS = 1
         }
         public enum Enum_GradeMode
         {
@@ -46,30 +46,24 @@ namespace BLC
         }
         #endregion
         #region Members
-        private string _ConnectionString = string.Empty;
-        DALC.IDALC _AppContext = null;     
+        private String _ConnectionString = String.Empty;
+        private readonly DALC.IDALC _AppContext = null;
         #endregion
         #region Properties
-	public Tools.Tools oTools { get; set; }
-        public string ConnectionString
+        public Tools.Tools oTools { get; set; }
+        public String ConnectionString
         {
-            get
-            {
-                return _ConnectionString;
-            }
-            set
-            {
-                _ConnectionString = value;
-            }
+            get => _ConnectionString;
+            set => _ConnectionString = value;
         }
-        public long? UserID { get; set; }
+        public Int64? UserID { get; set; }
         public Int32? OwnerID { get; set; }
         public Enum_Language Language { get; set; }
-        public string Messages_FilePath { get; set; }
+        public String Messages_FilePath { get; set; }
         public List<Message> Messages { get; set; }
         public Enum_Environment Environment { get; set; }
-        
-        #endregion       
+
+        #endregion
         #region Constructor
         public BLC()
         {
@@ -81,7 +75,7 @@ namespace BLC
         public BLC(BLCInitializer i_BLCInitializer)
         {
             #region Declaration And Initialization Section.    
-            Tools.Tools oTools = new Tools.Tools();
+            Tools.Tools oTools = new();
             #endregion
             #region Body Section.
             // ---------------------
@@ -99,7 +93,7 @@ namespace BLC
             SubscribeToEvents();
             Initialize_Audit_Mechanism();
             // ---------------------
-                      
+
 
             #endregion
         }
@@ -137,29 +131,23 @@ namespace BLC
             XElement oLanguage = null;
             #endregion
             #region Body Section.
-            this.Messages = new List<Message>();
+            Messages = new List<Message>();
 
-            if (!string.IsNullOrEmpty(this.Messages_FilePath))
+            if(!String.IsNullOrEmpty(Messages_FilePath))
             {
-                oRoot = XElement.Load(this.Messages_FilePath);
-                if (oRoot != null)
+                oRoot = XElement.Load(Messages_FilePath);
+                if(oRoot != null)
                 {
-                    switch (Language)
+                    oLanguage = Language switch
                     {
-                        case Enum_Language.English:
-                            oLanguage = oRoot.Element("ENGLISH");
-                            break;
-                        case Enum_Language.Arabic:
-                            oLanguage = oRoot.Element("ARABIC");
-                            break;
-                        default:
-                            oLanguage = oRoot.Element("ENGLISH");
-                            break;
-                    }
-
-                    foreach (var oItem in oLanguage.Elements("MESSAGE"))
+                        Enum_Language.English => oRoot.Element("ENGLISH"),
+                        Enum_Language.Arabic => oRoot.Element("ARABIC"),
+                        Enum_Language.French => oRoot.Element("FRENCH"),
+                        _ => oRoot.Element("ENGLISH"),
+                    };
+                    foreach(XElement oItem in oLanguage.Elements("MESSAGE"))
                     {
-                        this.Messages.Add(new Message() { Code = oItem.Attribute("CODE").Value, Content = oItem.Attribute("CONTENT").Value });
+                        Messages.Add(new Message() { Code = oItem.Attribute("CODE").Value,Content = oItem.Attribute("CONTENT").Value });
                     }
                 }
             }
@@ -167,13 +155,13 @@ namespace BLC
         }
         #endregion
         #region GetMessageContent
-        public string GetMessageContent(Enum_BR_Codes i_BR_Code)
+        public String GetMessageContent(Enum_BR_Codes i_BR_Code)
         {
             #region Declaration And Initialization Section.
-            string str_ReturnValue = string.Empty;
+            String str_ReturnValue = String.Empty;
             #endregion
             #region Body Section.
-            var oResult = this.Messages.First(x => x.Code == i_BR_Code.ToString());
+            Message oResult = Messages.First(x => x.Code == i_BR_Code.ToString());
             str_ReturnValue = oResult.Content;
             #endregion
             #region Return Section.
@@ -182,18 +170,18 @@ namespace BLC
         }
         #endregion
         #region GetMessageContent
-        public string GetMessageContent(Enum_BR_Codes i_BR_Code, Dictionary<string, string> i_PlaceHolders)
+        public String GetMessageContent(Enum_BR_Codes i_BR_Code,Dictionary<String,String> i_PlaceHolders)
         {
             #region Declaration And Initialization Section.
-            string str_ReturnValue = string.Empty;
+            String str_ReturnValue = String.Empty;
             #endregion
             #region Body Section.
-            var oResult = this.Messages.First(x => x.Code == i_BR_Code.ToString());
+            Message oResult = Messages.First(x => x.Code == i_BR_Code.ToString());
             str_ReturnValue = oResult.Content;
 
-            foreach (var oItem in i_PlaceHolders)
+            foreach(KeyValuePair<String,String> oItem in i_PlaceHolders)
             {
-                str_ReturnValue = str_ReturnValue.Replace(oItem.Key, oItem.Value);
+                str_ReturnValue = str_ReturnValue.Replace(oItem.Key,oItem.Value);
             }
             #endregion
             #region Return Section.
@@ -202,70 +190,75 @@ namespace BLC
         }
         #endregion
         #region Events Implementation
-        private void BLC_OnPostEvent_Get_Floor_By_OWNER_ID(ref List<Floor> i_Result, Params_Get_Floor_By_OWNER_ID i_Params_Get_Floor_By_OWNER_ID)
+        private void BLC_OnPostEvent_Get_Floor_By_OWNER_ID(ref List<Floor> i_Result,Params_Get_Floor_By_OWNER_ID i_Params_Get_Floor_By_OWNER_ID)
         {
-            foreach (Floor floor in i_Result)
+            foreach(Floor floor in i_Result)
             {
                 Params_Get_Room_By_FLOOR_ID params_Get_Room_By_FLOOR_ID = new();
                 params_Get_Room_By_FLOOR_ID.FLOOR_ID = floor.FLOOR_ID;
                 params_Get_Room_By_FLOOR_ID.UserID = i_Params_Get_Floor_By_OWNER_ID.UserID;
+                params_Get_Room_By_FLOOR_ID.UserType = i_Params_Get_Floor_By_OWNER_ID.UserType;
                 floor.MyRooms = Get_Room_By_FLOOR_ID(params_Get_Room_By_FLOOR_ID);
             }
         }
-        private void BLC_OnPostEvent_Get_Room_By_FLOOR_ID(ref List<Room> i_Result, Params_Get_Room_By_FLOOR_ID i_Params_Get_Room_By_FLOOR_ID)
+        private void BLC_OnPostEvent_Get_Room_By_FLOOR_ID(ref List<Room> i_Result,Params_Get_Room_By_FLOOR_ID i_Params_Get_Room_By_FLOOR_ID)
         {
-            foreach (Room room in i_Result)
+            foreach(Room room in i_Result)
             {
                 Params_Get_Outlet_By_ROOM_ID params_Get_Outlet_By_ROOM_ID = new();
                 params_Get_Outlet_By_ROOM_ID.ROOM_ID = room.ROOM_ID;
                 params_Get_Outlet_By_ROOM_ID.UserID = i_Params_Get_Room_By_FLOOR_ID.UserID;
+                params_Get_Outlet_By_ROOM_ID.UserType = i_Params_Get_Room_By_FLOOR_ID.UserType;
                 room.MyOutlets = Get_Outlet_By_ROOM_ID(params_Get_Outlet_By_ROOM_ID);
             }
         }
-        private void BLC_OnPostEvent_Get_Outlet_By_ROOM_ID(ref List<Outlet> i_Result, Params_Get_Outlet_By_ROOM_ID i_Params_Get_Outlet_By_ROOM_ID)
+        private void BLC_OnPostEvent_Get_Outlet_By_ROOM_ID(ref List<Outlet> i_Result,Params_Get_Outlet_By_ROOM_ID i_Params_Get_Outlet_By_ROOM_ID)
         {
-            foreach (Outlet outlet in i_Result)
+            foreach(Outlet outlet in i_Result)
             {
-                try
+                if(i_Params_Get_Outlet_By_ROOM_ID.UserType != "001")
                 {
-                    var oQuery = _AppContext.UP_GET_OUTLET_UI_BY_OUTLET_USER(
-                    outlet.OUTLET_ID,
-                    i_Params_Get_Outlet_By_ROOM_ID.UserID
-                    );
-                    if (oQuery.Count() == 1)
+                    try
                     {
-                        var oResult = oQuery.First();
-                        Outlet_ui outlet_Ui = new();
-                        oTools.CopyPropValues(oResult, outlet_Ui);
-                        Params_Get_Ui_By_UI_ID params_Get_Ui_By_UI_ID = new();
-                        params_Get_Ui_By_UI_ID.UI_ID = outlet_Ui.UI_ID;
-                        outlet.UI_Element = Get_Ui_By_UI_ID(params_Get_Ui_By_UI_ID);
-                        outlet.My_Outlet_Ui = outlet_Ui;
+                        List<dynamic> oQuery = _AppContext.UP_GET_OUTLET_UI_BY_OUTLET_USER(
+                        outlet.OUTLET_ID,
+                        i_Params_Get_Outlet_By_ROOM_ID.UserID
+                        );
+                        if(oQuery.Count == 1)
+                        {
+                            dynamic oResult = oQuery.First();
+                            Outlet_ui outlet_Ui = new();
+                            oTools.CopyPropValues(oResult,outlet_Ui);
+                            Params_Get_Ui_By_UI_ID params_Get_Ui_By_UI_ID = new();
+                            params_Get_Ui_By_UI_ID.UI_ID = outlet_Ui.UI_ID;
+                            outlet.UI_Element = Get_Ui_By_UI_ID(params_Get_Ui_By_UI_ID);
+                            outlet.My_Outlet_Ui = outlet_Ui;
+                        }
+                        else
+                        {
+                            throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_0003));
+                        }
                     }
-                    else
+                    catch(Exception e)
                     {
+                        Console.WriteLine(e.Message);
                         throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_0003));
                     }
-                }
-                catch(Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                        throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_0003));
                 }
                 Params_Get_Hardware_link_By_HARDWARE_LINK_ID params_Get_Hardware_Link_By_HARDWARE_LINK_ID = new();
                 params_Get_Hardware_Link_By_HARDWARE_LINK_ID.HARDWARE_LINK_ID = outlet.HARDWARE_LINK_ID;
                 outlet.My_Hardware_link = Get_Hardware_link_By_HARDWARE_LINK_ID(params_Get_Hardware_Link_By_HARDWARE_LINK_ID);
             }
         }
-        private void BLC_OnPostEvent_Get_Hardware_link_By_HARDWARE_LINK_ID(ref Hardware_link i_Result, Params_Get_Hardware_link_By_HARDWARE_LINK_ID i_Params_Get_Hardware_link_By_HARDWARE_LINK_ID)
+        private void BLC_OnPostEvent_Get_Hardware_link_By_HARDWARE_LINK_ID(ref Hardware_link i_Result,Params_Get_Hardware_link_By_HARDWARE_LINK_ID i_Params_Get_Hardware_link_By_HARDWARE_LINK_ID)
         {
             Params_Get_Plc_By_PLC_ID params_Get_Plc_By_PLC_ID = new();
             params_Get_Plc_By_PLC_ID.PLC_ID = i_Result.PLC_ID;
             i_Result.My_Plc = Get_Plc_By_PLC_ID(params_Get_Plc_By_PLC_ID);
         }
-        private void BLC_OnPreEvent_Edit_Outlet(Outlet i_Outlet, Enum_EditMode i_Enum_EditMode)
+        private void BLC_OnPreEvent_Edit_Outlet(Outlet i_Outlet,Enum_EditMode i_Enum_EditMode)
         {
-            if(i_Outlet.OUTLET_ID!=-1 && i_Outlet.CURRENT_VALUE!="-1")
+            if(i_Outlet.OUTLET_ID != -1 && i_Outlet.CURRENT_VALUE != "-1")
             {
                 if(i_Outlet.My_Hardware_link.My_Plc is not null)
                 {
@@ -275,7 +268,7 @@ namespace BLC
                             {
                                 Double val = Double.Parse(i_Outlet.CURRENT_VALUE);
                                 val *= 2.55;
-                                int intval = (int)Math.Round(val);
+                                Int32 intval = (Int32)Math.Round(val);
                                 if(intval > 255)
                                 {
                                     intval = 255;
@@ -285,7 +278,6 @@ namespace BLC
                                     intval = 0;
                                 }
                                 i_Outlet.CURRENT_VALUE = intval + "";
-                                intval = 0;
                                 Params_Twincat2Write params_Twincat2Write = new();
                                 params_Twincat2Write.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
                                 params_Twincat2Write.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
@@ -299,13 +291,18 @@ namespace BLC
                                 Params_Twincat2Toggle params_Twincat2Toggle = new();
                                 params_Twincat2Toggle.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
                                 params_Twincat2Toggle.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
-                                params_Twincat2Toggle.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
-                                var oQuery = _AppContext.UP_GET_SETUP_ENTRY(1,"_TIMER","001");
+                                string[] states = i_Outlet.My_Hardware_link.PLC_ADDRESS.Split(",");
+                                Params_Get_Outlet_By_OUTLET_ID params_Get_Outlet_By_OUTLET_ID = new();
+                                params_Get_Outlet_By_OUTLET_ID.OUTLET_ID = i_Outlet.OUTLET_ID;
+                                Params_Twincat2Write params_Twincat2Write = new();
+                                params_Twincat2Write.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
+                                params_Twincat2Write.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
+                                params_Twincat2Toggle.outlet = i_Outlet;
+                                List<dynamic> oQuery = _AppContext.UP_GET_SETUP_ENTRY(1,"_TIMER","001");
                                 if(oQuery.Count == 1)
                                 {
-                                    var oResult = oQuery.First();
-                                    int parseRes;
-                                    bool isParsed = int.TryParse(oResult.CODE_VALUE_EN,out parseRes);
+                                    dynamic oResult = oQuery.First();
+                                    Boolean isParsed = Int32.TryParse(oResult.CODE_VALUE_EN,out Int32 parseRes);
                                     if(isParsed)
                                     {
                                         params_Twincat2Toggle.Delay = parseRes;
@@ -319,7 +316,40 @@ namespace BLC
                                 {
                                     params_Twincat2Toggle.Delay = 40000;
                                 }
-                                _ = Twincat2Toggle(params_Twincat2Toggle);
+                                switch(Get_Outlet_By_OUTLET_ID(params_Get_Outlet_By_OUTLET_ID).CURRENT_VALUE)
+                                {
+                                    case "1":
+                                        params_Twincat2Write.VariableName = states[0];
+                                        params_Twincat2Write.Value = "0";
+                                        _ = Twincat2Write(params_Twincat2Write);
+                                        break;
+                                    case "2":
+                                        params_Twincat2Write.VariableName = states[1];
+                                        params_Twincat2Write.Value = "0";
+                                        _ = Twincat2Write(params_Twincat2Write);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                switch(i_Outlet.CURRENT_VALUE)
+                                {
+                                    case "1":
+                                        params_Twincat2Toggle.VariableName = states[0];
+                                        _ = Twincat2Toggle(params_Twincat2Toggle);
+                                        break;
+                                    case "2":
+                                        params_Twincat2Toggle.VariableName = states[1];
+                                        _ = Twincat2Toggle(params_Twincat2Toggle);
+                                        break;
+                                    default:
+                                        params_Twincat2Write.VariableName = states[0];
+                                        params_Twincat2Write.Value = "0";
+                                        _ = Twincat2Write(params_Twincat2Write);
+                                        params_Twincat2Write.VariableName = states[1];
+                                        params_Twincat2Write.Value = "0";
+                                        _ = Twincat2Write(params_Twincat2Write);
+                                        break;
+                                }
                             }
                             break;
                         case 4:
@@ -328,12 +358,11 @@ namespace BLC
                                 params_Twincat2Toggle.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
                                 params_Twincat2Toggle.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
                                 params_Twincat2Toggle.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
-                                var oQuery = _AppContext.UP_GET_SETUP_ENTRY(1,"_TIMER","002");
+                                List<dynamic> oQuery = _AppContext.UP_GET_SETUP_ENTRY(1,"_TIMER","002");
                                 if(oQuery.Count == 1)
                                 {
-                                    var oResult = oQuery.First();
-                                    int parseRes;
-                                    bool isParsed = int.TryParse(oResult.CODE_VALUE_EN,out parseRes);
+                                    dynamic oResult = oQuery.First();
+                                    Boolean isParsed = Int32.TryParse(oResult.CODE_VALUE_EN,out Int32 parseRes);
                                     if(isParsed)
                                     {
                                         params_Twincat2Toggle.Delay = parseRes;
@@ -365,14 +394,14 @@ namespace BLC
                 }
             }
         }
-        private void BLC_OnPreEvent_Edit_User(User i_User, Enum_EditMode i_Enum_EditMode)
+        private void BLC_OnPreEvent_Edit_User(User i_User,Enum_EditMode i_Enum_EditMode)
         {
             MiniCryptoHelper miniCrypto = new();
             i_User.PASSWORD = miniCrypto.Encrypt(i_User.PASSWORD);
         }
-        private void BLC_OnPostEvent_Edit_User(User i_User, Enum_EditMode i_Enum_EditMode)
+        private void BLC_OnPostEvent_Edit_User(User i_User,Enum_EditMode i_Enum_EditMode)
         {
-            if(i_Enum_EditMode== Enum_EditMode.Add)
+            if(i_Enum_EditMode == Enum_EditMode.Add)
             {
                 Params_Get_Outlet_By_OWNER_ID params_Get_Outlet_By_OWNER_ID = new();
                 params_Get_Outlet_By_OWNER_ID.OWNER_ID = i_User.OWNER_ID;
@@ -389,12 +418,12 @@ namespace BLC
                     x.OUTLET_UI_ID = -1;
                     x.OUTLET_ID = i.OUTLET_ID;
                     x.USER_ID = i_User.USER_ID;
-                    x.UI_ID = Ui[rand.Next(0, Ui.Count - 1)].UI_ID;
+                    x.UI_ID = Ui[rand.Next(0,Ui.Count - 1)].UI_ID;
                     params_Edit_Outlet_Ui_List.My_List_To_Edit.Add(x);
                 }
                 Edit_Outlet_ui_List(params_Edit_Outlet_Ui_List);
             }
-            
+
         }
         #endregion
     }
@@ -403,11 +432,11 @@ namespace BLC
     public class BLCInitializer
     {
         #region Properties
-        public string ConnectionString { get; set; }
-        public long? UserID { get; set; }
+        public String ConnectionString { get; set; }
+        public Int64? UserID { get; set; }
         public Int32? OwnerID { get; set; }
         public BLC.Enum_Language Language { get; set; }
-        public string Messages_FilePath { get; set; }
+        public String Messages_FilePath { get; set; }
         #endregion
     }
     #endregion
@@ -415,22 +444,22 @@ namespace BLC
     public class Message
     {
         #region Properties
-        public string Code { get; set; }
-        public string Content { get; set; }
+        public String Code { get; set; }
+        public String Content { get; set; }
         #endregion
     }
     #endregion
     #region EnvCode Attribute
     #region EnvCode
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Constructor, AllowMultiple = true)]
-    public class EnvCode : System.Attribute
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Constructor,AllowMultiple = true)]
+    public class EnvCode: System.Attribute
     {
         #region Properties
         public BLC.Enum_Environment Environment { get; set; }
-        public string MethodName { get; set; }
+        public String MethodName { get; set; }
         #endregion
         #region Constructor
-        public EnvCode(BLC.Enum_Environment i_Environment, string i_MethodName)
+        public EnvCode(BLC.Enum_Environment i_Environment,String i_MethodName)
         {
             #region Body Section.
             Environment = i_Environment;
@@ -445,10 +474,10 @@ namespace BLC
             #region Declaration And Initialization Section.
             MethodInfo[] oMethods = null;
             MethodInfo oMethodInfo = null;
-            object[] oAttributes = null;
+            Object[] oAttributes = null;
             EnvCode oEnvCode = null;
 
-            bool Is_AlreadyFound = false;
+            Boolean Is_AlreadyFound = false;
             MethodInfo oMethodInfo_ReturnValue = null;
             #endregion
             #region Body Section.
@@ -458,10 +487,10 @@ namespace BLC
             // ----------------------
 
             // ----------------------
-            for (int i = 0; i < oMethods.GetLength(0); i++)
+            for(Int32 i = 0; i < oMethods.GetLength(0); i++)
             {
                 // ----------------------
-                if (Is_AlreadyFound == true)
+                if(Is_AlreadyFound == true)
                 {
                     break;
                 }
@@ -473,14 +502,14 @@ namespace BLC
                 // ----------------------
 
                 // ----------------------
-                foreach (Attribute oAttribute in oAttributes)
+                foreach(Attribute oAttribute in oAttributes)
                 {
-                    if (oAttribute is EnvCode)
+                    if(oAttribute is EnvCode)
                     {
                         oEnvCode = oAttribute as EnvCode;
-                        if (oEnvCode != null)
+                        if(oEnvCode != null)
                         {
-                            if ((oEnvCode.Environment == i_Params_GetEnvCode.My_Environment) && (oEnvCode.MethodName == i_Params_GetEnvCode.My_MethodName))
+                            if((oEnvCode.Environment == i_Params_GetEnvCode.My_Environment) && (oEnvCode.MethodName == i_Params_GetEnvCode.My_MethodName))
                             {
                                 oMethodInfo_ReturnValue = oMethodInfo;
                                 Is_AlreadyFound = true;
@@ -507,7 +536,7 @@ namespace BLC
         #region Properties.
         public System.Type My_Type { get; set; }
         public BLC.Enum_Environment My_Environment { get; set; }
-        public string My_MethodName { get; set; }
+        public String My_MethodName { get; set; }
         #endregion
     }
     #endregion

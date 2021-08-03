@@ -26,37 +26,33 @@ namespace BLC
         public void EditSetup(SetupEntry i_SetupEntry)
         {
             #region Declaration And Initialization Section.
-            Tools.Tools oTools = new Tools.Tools();
+            Tools.Tools oTools = new();
             #endregion
             #region Environment Related Code Handling
-            Params_GetEnvCode oParams_GetEnvCode = new Params_GetEnvCode();
-            oParams_GetEnvCode.My_Environment = this.Environment;
-            oParams_GetEnvCode.My_MethodName = "EditSetup";
-            oParams_GetEnvCode.My_Type = typeof(BLC);
+            Params_GetEnvCode oParams_GetEnvCode = new()
+            {
+                My_Environment = Environment,
+                My_MethodName = "EditSetup",
+                My_Type = typeof(BLC)
+            };
             MethodInfo oMethodInfo = EnvCode.GetEnvCode(oParams_GetEnvCode);
             if(oMethodInfo != null)
             {
-                oMethodInfo.Invoke(this,new object[] { i_SetupEntry });
+                oMethodInfo.Invoke(this,new Object[] { i_SetupEntry });
                 return;
             }
             #endregion
             #region PreEvent_General
-            if(OnPreEvent_General != null)
-            {
-                OnPreEvent_General("EditSetup");
-            }
+            OnPreEvent_General?.Invoke("EditSetup");
             #endregion
             #region Body Section.
-            i_SetupEntry.ENTRY_USER_ID = this.UserID;
-            i_SetupEntry.OWNER_ID = this.OwnerID;
+            i_SetupEntry.ENTRY_USER_ID = UserID;
+            i_SetupEntry.OWNER_ID = OwnerID;
             i_SetupEntry.ENTRY_DATE = oTools.GetDateString(DateTime.Today);
             oTools.InvokeMethod(_AppContext,"UP_EDIT_SETUP",i_SetupEntry);
             #endregion
             #region PostEvent_General
-            if(OnPostEvent_General != null)
-            {
-                OnPostEvent_General("EditSetup");
-            }
+            OnPostEvent_General?.Invoke("EditSetup");
             #endregion
         }
         #endregion
@@ -64,37 +60,34 @@ namespace BLC
         #endregion
         #region Ticket
         #region ResolveTicket
-        public Dictionary<string,string> ResolveTicket(string i_Input)
+        public Dictionary<String,String> ResolveTicket(String i_Input)
         {
             #region Declaration And Initialization Section.
-            Dictionary<string,string> oList = new Dictionary<string,string>();
-            string str_Ticket_PlainText = string.Empty;
-            Crypto.Crypto oCrypto = new Crypto.Crypto();
-            string[] oMainTempList = null;
-            string[] oSubTempList = null;
+            Dictionary<String,String> oList = new();
+            String str_Ticket_PlainText = String.Empty;
+            Crypto.Crypto oCrypto = new();
+            String[] oMainTempList = null;
+            String[] oSubTempList = null;
             #endregion
             #region PreEvent_General
-            if(OnPreEvent_General != null)
-            {
-                OnPreEvent_General("ResolveTicket");
-            }
+            OnPreEvent_General?.Invoke("ResolveTicket");
             #endregion
             #region Body Section.
-            if(!string.IsNullOrEmpty(i_Input))
+            if(!String.IsNullOrEmpty(i_Input))
             {
                 str_Ticket_PlainText = System.Net.WebUtility.UrlDecode(i_Input);
                 str_Ticket_PlainText = oCrypto.DescrambleQueryString(str_Ticket_PlainText);
 
-                if(!string.IsNullOrEmpty(str_Ticket_PlainText))
+                if(!String.IsNullOrEmpty(str_Ticket_PlainText))
                 {
-                    oMainTempList = str_Ticket_PlainText.Split(new string[] { "[~!@]" },StringSplitOptions.RemoveEmptyEntries);
+                    oMainTempList = str_Ticket_PlainText.Split(new String[] { "[~!@]" },StringSplitOptions.RemoveEmptyEntries);
 
-                    var oQuery = from oItem in oMainTempList
-                                 select oItem;
+                    IEnumerable<String> oQuery = from oItem in oMainTempList
+                                                 select oItem;
 
-                    foreach(var oRow in oQuery)
+                    foreach(String oRow in oQuery)
                     {
-                        oSubTempList = oRow.Split(new string[] { ":" },StringSplitOptions.None);
+                        oSubTempList = oRow.Split(new String[] { ":" },StringSplitOptions.None);
                         oList.Add(oSubTempList[0],oSubTempList[1]);
                     }
                 }
@@ -106,10 +99,7 @@ namespace BLC
             }
             #endregion
             #region PostEvent_General
-            if(OnPostEvent_General != null)
-            {
-                OnPostEvent_General("ResolveTicket");
-            }
+            OnPostEvent_General?.Invoke("ResolveTicket");
             #endregion
             #region Return Section.
             return oList;
@@ -117,32 +107,31 @@ namespace BLC
         }
         #endregion
         #region IsValidTicket
-        public bool IsValidTicket(string i_Input)
+        public Boolean IsValidTicket(String i_Input)
         {
             #region Declaration And Initialization Section.
-            bool Is_ValidTicket = false;
-            long? i_MinutesElapsedSinceMidnight = 0;
-            string str_CurrentDate = string.Empty;
-            Tools.Tools oTools = new Tools.Tools();
-            Dictionary<string,string> oTicketParts = new Dictionary<string,string>();
+            Boolean Is_ValidTicket = false;
+            Int64? i_MinutesElapsedSinceMidnight = 0;
+            String str_CurrentDate = String.Empty;
+            Tools.Tools oTools = new();
+            Dictionary<String,String> oTicketParts = new();
             #endregion
             #region Environment Related Code Handling
-            Params_GetEnvCode oParams_GetEnvCode = new Params_GetEnvCode();
-            oParams_GetEnvCode.My_Environment = this.Environment;
-            oParams_GetEnvCode.My_MethodName = "IsValidTicket";
-            oParams_GetEnvCode.My_Type = typeof(BLC);
+            Params_GetEnvCode oParams_GetEnvCode = new()
+            {
+                My_Environment = Environment,
+                My_MethodName = "IsValidTicket",
+                My_Type = typeof(BLC)
+            };
             MethodInfo oMethodInfo = EnvCode.GetEnvCode(oParams_GetEnvCode);
             if(oMethodInfo != null)
             {
-                return Convert.ToBoolean(oMethodInfo.Invoke(this,new object[] { i_Input }));
+                return Convert.ToBoolean(oMethodInfo.Invoke(this,new Object[] { i_Input }));
                 // Intentially Left Empty.
             }
             #endregion
             #region PreEvent_General
-            if(OnPreEvent_General != null)
-            {
-                OnPreEvent_General("IsValidTicket");
-            }
+            OnPreEvent_General?.Invoke("IsValidTicket");
             #endregion
             #region Body Section.
             try
@@ -152,7 +141,7 @@ namespace BLC
 
                 if(oTicketParts["START_DATE"] == str_CurrentDate) // Session Started In Different Day.
                 {
-                    i_MinutesElapsedSinceMidnight = (long?)(DateTime.Now - DateTime.Today).TotalMinutes;
+                    i_MinutesElapsedSinceMidnight = (Int64?)(DateTime.Now - DateTime.Today).TotalMinutes;
 
                     if(i_MinutesElapsedSinceMidnight <= Convert.ToInt32(oTicketParts["START_MINUTE"]) + Convert.ToInt32(oTicketParts["SESSION_PERIOD"]))
                     {
@@ -161,16 +150,13 @@ namespace BLC
                 }
 
             }
-            catch(Exception ex)
+            catch
             {
                 Is_ValidTicket = false;
             }
             #endregion
             #region PostEvent_General
-            if(OnPostEvent_General != null)
-            {
-                OnPostEvent_General("IsValidTicket");
-            }
+            OnPostEvent_General?.Invoke("IsValidTicket");
             #endregion
             #region Return Section.
             return Is_ValidTicket;
@@ -182,26 +168,26 @@ namespace BLC
         public All_Data Get_All_Data(Params_Get_All_Data i_Params_Get_All_Data)
         {
             #region Declaration And Initialization Section.
-            Crypto.MiniCryptoHelper oCrypto = new Crypto.MiniCryptoHelper();
-            Crypto.Crypto sCrypto = new Crypto.Crypto();
-            string str_Ticket_PlainText = string.Empty;
-            string str_Ticket_Encrypted = string.Empty;
+            Crypto.MiniCryptoHelper oCrypto = new();
+            Crypto.Crypto sCrypto = new();
+            String str_Ticket_PlainText = String.Empty;
+            String str_Ticket_Encrypted = String.Empty;
             Int32? i_ExpiryPeriod = 240; // In Minutes
-            long? i_MinutesElapsedSinceMidnight = 0;
+            Int64? i_MinutesElapsedSinceMidnight = 0;
             All_Data all_Data = new();
-            Tools.Tools oTools = new Tools.Tools();
+            Tools.Tools oTools = new();
 
             #endregion
             #region Body Section.
-            var oQuery = from oItem in _AppContext.UP_GET_ALL_DATA(
+            IEnumerable<dynamic> oQuery = from oItem in _AppContext.UP_GET_ALL_DATA(
                 i_Params_Get_All_Data.My_UserInfo.UserName,
                 oCrypto.Encrypt(i_Params_Get_All_Data.My_UserInfo.Password)
                 )
-                         select oItem;
+                                          select oItem;
 
             if(oQuery.Count() == 1)
             {
-                var oResult = oQuery.First();
+                dynamic oResult = oQuery.First();
                 // ------------------------------
                 i_Params_Get_All_Data.My_UserInfo.IsAuthenticated = true;
                 i_Params_Get_All_Data.My_UserInfo.UserID = oResult.USER_ID;
@@ -210,13 +196,13 @@ namespace BLC
 
 
                 // ------------------------------
-                this.UserID = i_Params_Get_All_Data.My_UserInfo.UserID;
-                this.OwnerID = i_Params_Get_All_Data.My_UserInfo.OwnerID;
+                UserID = i_Params_Get_All_Data.My_UserInfo.UserID;
+                OwnerID = i_Params_Get_All_Data.My_UserInfo.OwnerID;
                 // ------------------------------
 
                 // ------------------------------
-                i_MinutesElapsedSinceMidnight = (long?)(DateTime.Now - DateTime.Today).TotalMinutes;
-                str_Ticket_PlainText = string.Format(
+                i_MinutesElapsedSinceMidnight = (Int64?)(DateTime.Now - DateTime.Today).TotalMinutes;
+                str_Ticket_PlainText = String.Format(
                     "USER_ID:{0}[~!@]OWNER_ID:{1}[~!@]START_DATE:{2}[~!@]START_MINUTE:{3}[~!@]SESSION_PERIOD:{4}",
                     i_Params_Get_All_Data.My_UserInfo.UserID.ToString(),
                     i_Params_Get_All_Data.My_UserInfo.OwnerID.ToString(),
@@ -232,6 +218,7 @@ namespace BLC
                 Params_Get_Floor_By_OWNER_ID params_Get_Floor_By_OWNER_ID = new();
                 params_Get_Floor_By_OWNER_ID.OWNER_ID = i_Params_Get_All_Data.My_UserInfo.OwnerID;
                 params_Get_Floor_By_OWNER_ID.UserID = (Int32)i_Params_Get_All_Data.My_UserInfo.UserID;
+                params_Get_Floor_By_OWNER_ID.UserType = oResult.USER_TYPE_CODE;
                 all_Data.Floors = Get_Floor_By_OWNER_ID(params_Get_Floor_By_OWNER_ID);
                 Params_Get_Ui_By_OWNER_ID params_Get_Ui_By_OWNER_ID = new();
                 params_Get_Ui_By_OWNER_ID.OWNER_ID = 1;
@@ -253,26 +240,26 @@ namespace BLC
         public Admin_log_in_res Admin_log_in(Params_Admin_log_in i_Params_Admin_log_in)
         {
             #region Declaration And Initialization Section.
-            Crypto.MiniCryptoHelper oCrypto = new Crypto.MiniCryptoHelper();
-            Crypto.Crypto sCrypto = new Crypto.Crypto();
-            string str_Ticket_PlainText = string.Empty;
-            string str_Ticket_Encrypted = string.Empty;
+            Crypto.MiniCryptoHelper oCrypto = new();
+            Crypto.Crypto sCrypto = new();
+            String str_Ticket_PlainText = String.Empty;
+            String str_Ticket_Encrypted = String.Empty;
             Int32? i_ExpiryPeriod = 240; // In Minutes
-            long? i_MinutesElapsedSinceMidnight = 0;
+            Int64? i_MinutesElapsedSinceMidnight = 0;
             Admin_log_in_res admin_log_in = new();
-            Tools.Tools oTools = new Tools.Tools();
+            Tools.Tools oTools = new();
 
             #endregion
             #region Body Section.
-            var oQuery = from oItem in _AppContext.UP_GET_ALL_DATA(
+            IEnumerable<dynamic> oQuery = from oItem in _AppContext.UP_GET_ALL_DATA(
                 i_Params_Admin_log_in.My_UserInfo.UserName,
                 oCrypto.Encrypt(i_Params_Admin_log_in.My_UserInfo.Password)
                 )
-                         select oItem;
+                                          select oItem;
 
             if(oQuery.Count() == 1)
             {
-                var oResult = oQuery.First();
+                dynamic oResult = oQuery.First();
                 // ------------------------------
                 i_Params_Admin_log_in.My_UserInfo.IsAuthenticated = true;
                 i_Params_Admin_log_in.My_UserInfo.UserID = oResult.USER_ID;
@@ -281,13 +268,13 @@ namespace BLC
 
 
                 // ------------------------------
-                this.UserID = i_Params_Admin_log_in.My_UserInfo.UserID;
-                this.OwnerID = i_Params_Admin_log_in.My_UserInfo.OwnerID;
+                UserID = i_Params_Admin_log_in.My_UserInfo.UserID;
+                OwnerID = i_Params_Admin_log_in.My_UserInfo.OwnerID;
                 // ------------------------------
 
                 // ------------------------------
-                i_MinutesElapsedSinceMidnight = (long?)(DateTime.Now - DateTime.Today).TotalMinutes;
-                str_Ticket_PlainText = string.Format(
+                i_MinutesElapsedSinceMidnight = (Int64?)(DateTime.Now - DateTime.Today).TotalMinutes;
+                str_Ticket_PlainText = String.Format(
                     "USER_ID:{0}[~!@]OWNER_ID:{1}[~!@]START_DATE:{2}[~!@]START_MINUTE:{3}[~!@]SESSION_PERIOD:{4}",
                     i_Params_Admin_log_in.My_UserInfo.UserID.ToString(),
                     i_Params_Admin_log_in.My_UserInfo.OwnerID.ToString(),
@@ -317,26 +304,25 @@ namespace BLC
         public Service_Data_Result Get_Service_Data(Params_Get_Service_Data i_Params_Get_Service_Data)
         {
             #region Declaration And Initialization Section.
-            Crypto.MiniCryptoHelper oCrypto = new Crypto.MiniCryptoHelper();
-            Crypto.Crypto sCrypto = new Crypto.Crypto();
-            string str_Ticket_PlainText = string.Empty;
-            string str_Ticket_Encrypted = string.Empty;
-            Int32? i_ExpiryPeriod = 240; // In Minutes
-            long? i_MinutesElapsedSinceMidnight = 0;
+            Crypto.MiniCryptoHelper oCrypto = new();
+            Crypto.Crypto sCrypto = new();
+            String str_Ticket_PlainText = String.Empty;
+            String str_Ticket_Encrypted = String.Empty;
+            Int64? i_MinutesElapsedSinceMidnight = 0;
             Service_Data_Result result = new();
-            Tools.Tools oTools = new Tools.Tools();
+            Tools.Tools oTools = new();
 
             #endregion
             #region Body Section.
-            var oQuery = from oItem in _AppContext.UP_GET_ALL_DATA(
+            IEnumerable<dynamic> oQuery = from oItem in _AppContext.UP_GET_ALL_DATA(
                 i_Params_Get_Service_Data.My_UserInfo.UserName,
                 i_Params_Get_Service_Data.My_UserInfo.Password
                 )
-                         select oItem;
+                                          select oItem;
 
             if(oQuery.Count() == 1)
             {
-                var oResult = oQuery.First();
+                dynamic oResult = oQuery.First();
                 // ------------------------------
                 i_Params_Get_Service_Data.My_UserInfo.IsAuthenticated = true;
                 i_Params_Get_Service_Data.My_UserInfo.UserID = oResult.USER_ID;
@@ -345,13 +331,13 @@ namespace BLC
 
 
                 // ------------------------------
-                this.UserID = i_Params_Get_Service_Data.My_UserInfo.UserID;
-                this.OwnerID = i_Params_Get_Service_Data.My_UserInfo.OwnerID;
+                UserID = i_Params_Get_Service_Data.My_UserInfo.UserID;
+                OwnerID = i_Params_Get_Service_Data.My_UserInfo.OwnerID;
                 // ------------------------------
 
                 // ------------------------------
-                i_MinutesElapsedSinceMidnight = (long?)(DateTime.Now - DateTime.Today).TotalMinutes;
-                str_Ticket_PlainText = string.Format(
+                i_MinutesElapsedSinceMidnight = (Int64?)(DateTime.Now - DateTime.Today).TotalMinutes;
+                str_Ticket_PlainText = String.Format(
                     "USER_ID:{0}[~!@]OWNER_ID:{1}",
                     i_Params_Get_Service_Data.My_UserInfo.UserID.ToString(),
                     i_Params_Get_Service_Data.My_UserInfo.OwnerID.ToString()
@@ -376,33 +362,39 @@ namespace BLC
         #region Monitor PLC
         public List<Outlet> MonitorPLC(Params_MonitorPLC i_Params_MonitorPLC)
         {
+            _ = i_Params_MonitorPLC;
             List<Outlet> result = new();
             Params_Get_Plc_By_OWNER_ID params_Get_Plc_By_OWNER_ID = new();
             params_Get_Plc_By_OWNER_ID.OWNER_ID = 1;
-            List<Plc> plcs = new();
-            plcs = Get_Plc_By_OWNER_ID(params_Get_Plc_By_OWNER_ID);
+            List<Plc> plcs = Get_Plc_By_OWNER_ID(params_Get_Plc_By_OWNER_ID);
             try
             {
-                foreach(Plc plc in plcs)
+                if(plcs is not null)
                 {
-                    foreach(Hardware_link Hardware in plc.My_Hardware_link)
+                    foreach(Plc plc in plcs)
                     {
-                        if(Hardware.My_Outlet is not null)
+                        if(plc.My_Hardware_link is not null)
                         {
-                            foreach(Outlet outlet in Hardware.My_Outlet)
+                            foreach(Hardware_link Hardware in plc.My_Hardware_link)
                             {
-                                if(outlet.OUTLET_TYPE_ID is 1 or 2)
+                                if(Hardware.My_Outlet is not null)
                                 {
-                                    Params_Twincat2Read params_Twincat2Read = new();
-                                    params_Twincat2Read.AMSID = plc.LOCATION;
-                                    params_Twincat2Read.Port = plc.PORT;
-                                    params_Twincat2Read.VariableName = Hardware.PLC_ADDRESS;
-
-                                    string twRead = Twincat2Read(params_Twincat2Read);
-                                    if(outlet.CURRENT_VALUE != twRead)
+                                    foreach(Outlet outlet in Hardware.My_Outlet)
                                     {
-                                        outlet.CURRENT_VALUE = twRead;
-                                        result.Add(outlet);
+                                        if(outlet.OUTLET_TYPE_ID is 1 or 2)
+                                        {
+                                            Params_Twincat2Read params_Twincat2Read = new();
+                                            params_Twincat2Read.AMSID = plc.LOCATION;
+                                            params_Twincat2Read.Port = plc.PORT;
+                                            params_Twincat2Read.VariableName = Hardware.PLC_ADDRESS;
+
+                                            String twRead = Twincat2Read(params_Twincat2Read);
+                                            if(outlet.CURRENT_VALUE != twRead)
+                                            {
+                                                outlet.CURRENT_VALUE = twRead;
+                                                result.Add(outlet);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -426,22 +418,22 @@ namespace BLC
     {
         #region Properties
         public Int32? OWNER_ID { get; set; }
-        public string TBL_NAME { get; set; }
-        public string CODE_NAME { get; set; }
-        public bool? ISSYSTEM { get; set; }
-        public bool? ISDELETEABLE { get; set; }
-        public bool? ISUPDATEABLE { get; set; }
-        public bool? ISVISIBLE { get; set; }
-        public bool? ISDELETED { get; set; }
+        public String TBL_NAME { get; set; }
+        public String CODE_NAME { get; set; }
+        public Boolean? ISSYSTEM { get; set; }
+        public Boolean? ISDELETEABLE { get; set; }
+        public Boolean? ISUPDATEABLE { get; set; }
+        public Boolean? ISVISIBLE { get; set; }
+        public Boolean? ISDELETED { get; set; }
         public Int32? DISPLAY_ORDER { get; set; }
-        public string CODE_VALUE_EN { get; set; }
-        public string CODE_VALUE_FR { get; set; }
-        public string CODE_VALUE_AR { get; set; }
-        public string ENTRY_DATE { get; set; }
-        public long? ENTRY_USER_ID { get; set; }
-        public string NOTES { get; set; }
+        public String CODE_VALUE_EN { get; set; }
+        public String CODE_VALUE_FR { get; set; }
+        public String CODE_VALUE_AR { get; set; }
+        public String ENTRY_DATE { get; set; }
+        public Int64? ENTRY_USER_ID { get; set; }
+        public String NOTES { get; set; }
 
-        public string INVARIANT_VALUE { get; set; }
+        public String INVARIANT_VALUE { get; set; }
         #endregion
     }
     #endregion
@@ -449,14 +441,14 @@ namespace BLC
     public class Params_Get_Setup_By_OWNER_ID_TBL_NAME
     {
         public Int32? OWNER_ID { get; set; }
-        public string TBL_NAME { get; set; }
+        public String TBL_NAME { get; set; }
     }
     #endregion
     #endregion
     #region Uploaded_file
     public partial class Uploaded_file
     {
-        public string My_URL { get; set; }
+        public String My_URL { get; set; }
     }
     #endregion
     #region Floor
@@ -475,7 +467,9 @@ namespace BLC
     public partial class Outlet
     {
         public Outlet_ui My_Outlet_Ui { get; set; }
+#nullable enable
         public Ui? UI_Element { get; set; }
+#nullable disable
     }
     #endregion
     #region Outlet UI
@@ -488,12 +482,12 @@ namespace BLC
     #region LogInFetch
     public class UserInfo
     {
-        public string UserName { get; set; }
-        public string Password { get; set; }
+        public String UserName { get; set; }
+        public String Password { get; set; }
         public Int32 OwnerID { get; set; }
         public Int64 UserID { get; set; }
-        public bool IsAuthenticated { get; set; }
-        public string Ticket { get; set; }
+        public Boolean IsAuthenticated { get; set; }
+        public String Ticket { get; set; }
     }
     public class Params_Get_All_Data
     {
@@ -508,14 +502,19 @@ namespace BLC
     public partial class Params_Get_Floor_By_OWNER_ID
     {
         public Int32? UserID { get; set; }
+        public String UserType { get; set; }
     }
     public partial class Params_Get_Room_By_FLOOR_ID
     {
         public Int32? UserID { get; set; }
+        public String UserType { get; set; }
+
     }
     public partial class Params_Get_Outlet_By_ROOM_ID
     {
         public Int32? UserID { get; set; }
+        public String UserType { get; set; }
+
     }
     #endregion
     #region Admin Log In
