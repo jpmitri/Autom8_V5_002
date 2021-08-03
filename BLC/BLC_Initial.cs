@@ -294,7 +294,6 @@ namespace BLC
                                 string[] states = i_Outlet.My_Hardware_link.PLC_ADDRESS.Split(",");
                                 Params_Get_Outlet_By_OUTLET_ID params_Get_Outlet_By_OUTLET_ID = new();
                                 params_Get_Outlet_By_OUTLET_ID.OUTLET_ID = i_Outlet.OUTLET_ID;
-                                params_Twincat2Toggle.VariableName = i_Outlet.My_Hardware_link.PLC_ADDRESS;
                                 Params_Twincat2Write params_Twincat2Write = new();
                                 params_Twincat2Write.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
                                 params_Twincat2Write.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
@@ -302,14 +301,16 @@ namespace BLC
                                 switch(Get_Outlet_By_OUTLET_ID(params_Get_Outlet_By_OUTLET_ID).CURRENT_VALUE)
                                 {
                                     case "1":
-                                        params_Twincat2Write.VariableName = states[0];
-                                        params_Twincat2Write.Value = "0";
-                                        _ = Twincat2Write(params_Twincat2Write);
-                                        break;
-                                    case "2":
                                         params_Twincat2Write.VariableName = states[1];
                                         params_Twincat2Write.Value = "0";
                                         _ = Twincat2Write(params_Twincat2Write);
+                                        params_Twincat2Toggle.VariableName = states[0];
+                                        break;
+                                    case "2":
+                                        params_Twincat2Write.VariableName = states[0];
+                                        params_Twincat2Write.Value = "0";
+                                        _ = Twincat2Write(params_Twincat2Write);
+                                        params_Twincat2Toggle.VariableName = states[1];
                                         break;
                                     default:
                                         params_Twincat2Write.VariableName = states[0];
