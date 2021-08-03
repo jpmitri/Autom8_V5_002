@@ -303,25 +303,18 @@ namespace BLC
                                 switch(Get_Outlet_By_OUTLET_ID(params_Get_Outlet_By_OUTLET_ID).CURRENT_VALUE)
                                 {
                                     case "1":
-                                        Console.WriteLine("case 1");
+                                        Console.WriteLine("DB case 1");
                                         params_Twincat2Write.VariableName = states[0];
                                         params_Twincat2Write.Value = "0";
                                         _ = Twincat2Write(params_Twincat2Write);
                                         break;
                                     case "2":
-                                        Console.WriteLine("case 2");
+                                        Console.WriteLine("DB case 2");
                                         params_Twincat2Write.VariableName = states[1];
                                         params_Twincat2Write.Value = "0";
                                         _ = Twincat2Write(params_Twincat2Write);
                                         break;
                                     default:
-                                        Console.WriteLine("case default");
-                                        params_Twincat2Write.VariableName = states[0];
-                                        params_Twincat2Write.Value = "0";
-                                        _ = Twincat2Write(params_Twincat2Write);
-                                        params_Twincat2Write.VariableName = states[1];
-                                        params_Twincat2Write.Value = "0";
-                                        _ = Twincat2Write(params_Twincat2Write);
                                         break;
                                 }
                                 List<dynamic> oQuery = _AppContext.UP_GET_SETUP_ENTRY(1,"_TIMER","001");
@@ -345,14 +338,23 @@ namespace BLC
                                     switch(i_Outlet.CURRENT_VALUE)
                                     {
                                     case "1":
+                                        Console.WriteLine("PLC Case 1");
                                         params_Twincat2Toggle.VariableName = states[0];
                                         _ = Twincat2Toggle(params_Twincat2Toggle);
                                         break;
                                     case "2":
+                                        Console.WriteLine("PLC Case 2");
                                         params_Twincat2Toggle.VariableName = states[1];
                                         _ = Twincat2Toggle(params_Twincat2Toggle);
                                         break;
                                     default:
+                                        Console.WriteLine("PLC case default");
+                                        params_Twincat2Write.VariableName = states[0];
+                                        params_Twincat2Write.Value = "0";
+                                        _ = Twincat2Write(params_Twincat2Write);
+                                        params_Twincat2Write.VariableName = states[1];
+                                        params_Twincat2Write.Value = "0";
+                                        _ = Twincat2Write(params_Twincat2Write);
                                         break;
                                     }
                                    
