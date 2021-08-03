@@ -300,23 +300,6 @@ namespace BLC
                                 params_Twincat2Write.AMSID = i_Outlet.My_Hardware_link.My_Plc.LOCATION;
                                 params_Twincat2Write.Port = i_Outlet.My_Hardware_link.My_Plc.PORT;
                                 params_Twincat2Toggle.outlet = i_Outlet;
-                                switch(Get_Outlet_By_OUTLET_ID(params_Get_Outlet_By_OUTLET_ID).CURRENT_VALUE)
-                                {
-                                    case "1":
-                                        Console.WriteLine("DB case 1");
-                                        params_Twincat2Write.VariableName = states[0];
-                                        params_Twincat2Write.Value = "0";
-                                        _ = Twincat2Write(params_Twincat2Write);
-                                        break;
-                                    case "2":
-                                        Console.WriteLine("DB case 2");
-                                        params_Twincat2Write.VariableName = states[1];
-                                        params_Twincat2Write.Value = "0";
-                                        _ = Twincat2Write(params_Twincat2Write);
-                                        break;
-                                    default:
-                                        break;
-                                }
                                 List<dynamic> oQuery = _AppContext.UP_GET_SETUP_ENTRY(1,"_TIMER","001");
                                 if(oQuery.Count == 1)
                                 {
@@ -335,8 +318,25 @@ namespace BLC
                                 {
                                     params_Twincat2Toggle.Delay = 40000;
                                 }
-                                    switch(i_Outlet.CURRENT_VALUE)
-                                    {
+                                switch(Get_Outlet_By_OUTLET_ID(params_Get_Outlet_By_OUTLET_ID).CURRENT_VALUE)
+                                {
+                                    case "1":
+                                        Console.WriteLine("DB case 1");
+                                        params_Twincat2Write.VariableName = states[0];
+                                        params_Twincat2Write.Value = "0";
+                                        _ = Twincat2Write(params_Twincat2Write);
+                                        break;
+                                    case "2":
+                                        Console.WriteLine("DB case 2");
+                                        params_Twincat2Write.VariableName = states[1];
+                                        params_Twincat2Write.Value = "0";
+                                        _ = Twincat2Write(params_Twincat2Write);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                switch(i_Outlet.CURRENT_VALUE)
+                                {
                                     case "1":
                                         Console.WriteLine("PLC Case 1");
                                         params_Twincat2Toggle.VariableName = states[0];
@@ -356,8 +356,7 @@ namespace BLC
                                         params_Twincat2Write.Value = "0";
                                         _ = Twincat2Write(params_Twincat2Write);
                                         break;
-                                    }
-                                   
+                                }
                             }
                             break;
                         case 4:
