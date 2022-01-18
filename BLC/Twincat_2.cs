@@ -55,7 +55,7 @@ namespace BLC
                                 {
                                     throw new BLCException(GetMessageContent(Enum_BR_Codes.BR_0004));
                                 }
-                                System.Threading.Thread.Sleep(i_Params_Twincat2Toggle.Delay);
+                                Task.Delay(i_Params_Twincat2Toggle.Delay).Wait();
                                 tcAdsClient.Connect(amsNetId,int.Parse(i_Params_Twincat2Toggle.Port));
                                 varibalehande = tcAdsClient.CreateVariableHandle(i_Params_Twincat2Toggle.VariableName);
                                 tcAdsClient.WriteAny(varibalehande,Convert.ToByte(0));
